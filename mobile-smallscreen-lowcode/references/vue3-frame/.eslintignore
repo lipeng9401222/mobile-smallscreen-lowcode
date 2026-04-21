@@ -1,0 +1,13 @@
+packages/**/*
+node_modules/*
+src/static/lib/*
+*/*.min.js
+
+dist
+dist-h5
+lib
+node_modules
+
+*.min.js
+*/native_uni/index.js
+npm

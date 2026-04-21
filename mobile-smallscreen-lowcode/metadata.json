@@ -1,0 +1,7 @@
+{
+  "version": "1.0.0",
+  "organization": "juanjuan",
+  "author": "juanjuan",
+  "date": "April 2026",
+  "abstract": "将各种来源（Google AI Studio zip、Figma 设计稿、文字描述）转换为 M8 IOC 小屏低代码组件，支持 ioc create/start 自动化与手工骨架降级流程。"
+}

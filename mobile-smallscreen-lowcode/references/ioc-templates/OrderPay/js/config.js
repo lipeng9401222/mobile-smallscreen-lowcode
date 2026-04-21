@@ -1,0 +1,154 @@
+import base from './base';
+// 通用容器样式
+import boxOptions from '../plugin/boxoptions/config';
+export default {
+    base,
+    dimension: {
+        width: '100%',
+        height: 'auto'
+    },
+    configuration: [
+        {
+            name: 'options',
+            value: [
+                boxOptions,
+                {
+                    displayName: '文字内容',
+                    name: 'title',
+                    value: [
+                        {
+                            displayName: '内容',
+                            name: 'content',
+                            value: '这是一个文字组件',
+                            type: 'text'
+                        }
+                    ]
+                },
+                {
+                    displayName: '定位设置',
+                    name: 'positionSetting',
+                    tip: 'css中的定位',
+                    value: [
+                        {
+                            displayName: '开启定位',
+                            name: 'isOpen',
+                            type: 'boolean',
+                            value: false
+                        },
+                        {
+                            displayName: 'left',
+                            name: 'left',
+                            type: 'text',
+                            value: '10px'
+                        },
+                        {
+                            displayName: 'top',
+                            name: 'top',
+                            type: 'text',
+                            value: '10px'
+                        },
+                        {
+                            displayName: 'right',
+                            name: 'right',
+                            type: 'text',
+                            value: ''
+                        },
+                        {
+                            displayName: 'bottom',
+                            name: 'bottom',
+                            type: 'text',
+                            value: ''
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            name: 'interaction',
+            displayName: '交互',
+            value: [
+                {
+                    name: 'callback',
+                    displayName: '回调参数',
+                    type: 'array',
+                    dynamic: true,
+                    value: [],
+                    template: {
+                        name: 'callback',
+                        displayName: '参数',
+                        value: [
+                            {
+                                name: 'param',
+                                displayName: '变量名',
+                                type: 'text',
+                                value: ''
+                            },
+                            {
+                                name: 'field',
+                                displayName: '字段值',
+                                type: 'text',
+                                value: ''
+                            }
+                        ]
+                    }
+                },
+                {
+                    name: 'event',
+                    displayName: '事件（新）',
+                    type: 'array',
+                    value: [
+                        {
+                            name: 'onMounted',
+                            displayName: 'onMounted事件',
+                            dynamic: true,
+                            type: 'array',
+                            // value中若预置事件的name需要全局唯一
+                            value: [],
+                            template: {
+                                name: 'templeteMounted_1',
+                                displayName: '动作',
+                                type: 'text',
+                                value: 'console.log("onMounted事件:", e)'
+                            }
+                        },
+                        {
+                            name: 'onClick',
+                            displayName: 'onClick事件',
+                            dynamic: true,
+                            type: 'array',
+                            // value中若预置事件的name需要全局唯一
+                            value: [
+                                {
+                                    name: 'templeteOnClick_1',
+                                    displayName: '动作',
+                                    type: 'text',
+                                    value: 'console.log("OnClick事件:", e)'
+                                }
+                            ],
+                            template: {
+                                name: 'templeteOnClick_1',
+                                displayName: '动作',
+                                type: 'text',
+                                value: 'console.log("OnClick事件:", e)'
+                            }
+                        },
+                        {
+                            name: 'onSubmit',
+                            displayName: 'onSubmit事件',
+                            dynamic: true,
+                            type: 'array',
+                            // value中若预置事件的name需要全局唯一
+                            value: [],
+                            template: {
+                                name: 'templeteOnSubmit_1',
+                                displayName: '值变动',
+                                type: 'text',
+                                value: 'console.log("onSubmit事件:", e)'
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};

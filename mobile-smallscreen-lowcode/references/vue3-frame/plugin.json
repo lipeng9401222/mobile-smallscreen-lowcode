@@ -1,0 +1,39 @@
+[
+    {
+        "moduleName": "index",
+        "indexURL": "pages/index/index",
+        "appId": "epoint65394222",
+        "version": "0.0.1",
+        "miniH5Type": "app"
+    },
+    {
+        "moduleName": "m8demo",
+        "indexURL": "pages/m8demo/list",
+        "appId": "epoint65394223",
+        "version": "0.0.1",
+        "miniH5Type": "app"
+    },
+    {
+        "moduleName": "m8showcase",
+        "indexURL": "pages/m8showcase/index",
+        "appId": "epoint65394224",
+        "version": "0.0.1",
+        "miniH5Type": "app"
+    },
+    {
+        "moduleName": "weexapp",
+        "indexURL": "index.js",
+        "appId": "weex-38922651",
+        "version": "0.0.1",
+        "miniH5Type": "weex"
+    },
+    {
+        "moduleName": "neui",
+        "indexURL": "pages/index/index",
+        "multiplePages": [
+            "pages/index"
+        ],
+        "appId": "neui-appId",
+        "miniH5Type": "neui"
+    }
+]

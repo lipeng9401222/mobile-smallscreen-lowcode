@@ -1,0 +1,22 @@
+[
+    {
+        "multipleName": "multipleNameA",
+        "multiplePages": [
+            "pages/index",
+            "modules/innerlogin"
+        ],
+        "multipleStatic": [
+            "static/logo.jpg"
+        ]
+    },
+    {
+        "multipleName": "multipleNameB",
+        "multiplePages": [
+            "pages/weexapp",
+            "modules/m8demo"
+        ],
+        "multipleStatic": [
+            "static/h5"
+        ]
+    }
+]

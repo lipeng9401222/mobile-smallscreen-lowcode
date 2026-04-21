@@ -1,0 +1,227 @@
+.van-content {
+    padding: 16px;
+    background-color: #fff;
+}
+
+.cell-title {
+    display: block;
+    padding: 20px 0 12px;
+    color: #303133;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+
+    &:first-child {
+        padding-top: 0;
+    }
+}
+
+// 示例卡片容器
+.example-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+// 示例组
+.example-group {
+    margin-bottom: 24px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+// 示例标题
+.example-title {
+    font-size: 14px;
+    color: #606266;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+// 示例说明文字
+.example-desc {
+    font-size: 13px;
+    color: #909399;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+// 示例信息提示
+.example-info {
+    padding: 12px;
+    background-color: #f4f4f5;
+    border-radius: 6px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #606266;
+
+    p {
+        margin: 0;
+        line-height: 1.6;
+    }
+}
+
+// 示例内容区域
+.example-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+// 示例行布局
+.example-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+// 示例列布局
+.example-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+// 示例flex布局
+.example-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+// 示例容器
+.example-container {
+    padding: 16px;
+    background-color: #f5f7fa;
+}
+
+// 工具栏容器
+.toolbar-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    background: #f9fafc;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+// 演示块
+.demo-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+// 常用间距类
+.mb-4 {
+    margin-bottom: 16px;
+}
+
+.mt-4 {
+    margin-top: 16px;
+}
+
+.m-2 {
+    margin: 8px;
+}
+
+.ml-4 {
+    margin-left: 16px;
+}
+
+.mx-1 {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+// 常用flex类
+.flex {
+    display: flex;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.justify-space-between {
+    justify-content: space-between;
+}
+
+.gap-4 {
+    gap: 16px;
+}
+
+.column-gap-4 {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 12px;
+    row-gap: 12px;
+}
+
+// 分隔线
+.example-divider {
+    height: 1px;
+    background-color: #dcdfe6;
+    margin: 20px 0;
+}
+
+// 输入框尺寸演示
+.demo-input-size {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.w-50 {
+    width: 100%;
+}
+
+// Icon右侧
+.ep-icon--right {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.2em;
+    margin-left: 6px;
+}
+
+::v-deep .ep-input__input {
+    overflow: auto;
+}
+
+::v-deep .ep-sublist .ep-collapse .ep-collapse-wrapper {
+    overflow: auto;
+}
+
+.ep-table {
+    overflow: auto;
+}
+
+::v-deep .ep-table>.ep-table__content {
+    overflow: auto;
+}
+::v-deep .ep-workflow__inner{
+    overflow: auto;
+}

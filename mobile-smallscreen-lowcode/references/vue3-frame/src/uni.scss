@@ -1,0 +1,320 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+
+/**
+ * $uni开头的是uniapp框架内置的样式变量，供uniapp提供的组件使用
+ * 其他为公司换肤相关变量
+ */
+
+/* 颜色变量 */
+
+/* 行为相关颜色 */
+$uni-color-primary: var(--e-color-primary);
+$uni-color-success: var(--e-color-success);
+$uni-color-warning: var(--e-color-warning);
+$uni-color-error: var(--e-color-danger);
+$black: var(--e-color-black);
+$white: var(--e-color-white);
+
+/* 文字基本颜色 */
+$uni-text-color: var(--e-text-color-primary); //基本色
+$uni-text-color-inverse: var(--e-text-color-white); //反色
+$uni-text-color-grey: var(--e-text-color-third); // 辅助灰色，如加载更多的提示信息
+$uni-text-color-placeholder: var(--e-text-color-placeholder);
+$uni-text-color-disable: var(--e-text-color-disabled);
+
+/* 背景颜色 */
+$uni-bg-color: #ffffff;
+$uni-bg-color-grey: #f5f6f7;
+$uni-bg-color-hover: #f1f1f1; //点击状态颜色
+$uni-bg-color-mask: var(--e-mask-color-dark-60); //遮罩颜色
+$uni-bg-color-blue: var(--e-color-primary-light-7); //基座常用辅助色
+
+/* 边框颜色 */
+$uni-border-color: var(--e-border-color);
+
+/* 尺寸变量 */
+
+/* 文字尺寸 */
+$uni-font-size-sm: var(--e-font-size-small);
+$uni-font-size-base: var(--e-font-size-base);
+$uni-font-size-lg: var(--e-font-size-medium-l);
+
+$font-weight-bold: var(--e-font-weight-bold);
+$font-weight-bolder: 700;
+$line-height-xs: var(--e-font-line-height-extra-small);
+$line-height-sm: var(--e-font-line-height-small);
+$line-height-md: var(--e-font-line-height-medium-l);
+$line-height-lg: var(--e-font-line-height-large);
+
+/* 图片尺寸 */
+$uni-img-size-sm: 20px;
+$uni-img-size-base: 26px;
+$uni-img-size-lg: 40px;
+
+/* Padding */
+$padding-base: 4px;
+$padding-xs: $padding-base * 2;
+$padding-sm: $padding-base * 3;
+$padding-md: $padding-base * 4;
+$padding-lg: $padding-base * 6;
+$padding-xl: $padding-base * 8;
+
+/* Border Radius */
+$uni-border-radius-sm: var(--e-border-radius-extra-mini);
+$uni-border-radius-base: calc(var(--e-border-radius-base) / 2.5);
+$uni-border-radius-lg: calc(var(--e-border-radius-large) / 1.6);
+$uni-border-radius-circle: 50%;
+
+/* 水平间距 */
+$uni-spacing-row-sm: calc(var(--e-space-s) + 1px);
+$uni-spacing-row-base: calc(var(--e-space-m) + 2px);
+$uni-spacing-row-lg: calc(var(--e-space-l) + 3px);
+
+/* 垂直间距 */
+$uni-spacing-col-sm: var(--e-space-s);
+$uni-spacing-col-base: var(--e-space-m);
+$uni-spacing-col-lg: var(--e-space-l);
+
+/* 透明度 */
+$uni-opacity-disabled: 0.3; // 组件禁用态的透明度
+
+/* 文章场景相关 */
+$uni-color-title: var(--e-text-color-primary); // 文章标题颜色
+$uni-font-size-title: var(--e-font-size-extra-large);
+$uni-color-subtitle: var(--e-text-color-secondary); // 二级标题颜色
+$uni-font-size-subtitle: var(--e-font-size-large);
+$uni-color-paragraph: var(--e-text-color-primary); // 文章段落颜色
+$uni-font-size-paragraph: var(--e-font-size-medium-m);
+
+/* ===== 跨端框架 UI 组件变量（EUI2.0） ===== */
+// Animation，组件库额外添加的变量，动画相关
+$animation_duration_slower: 0.28s; // 位移， 显隐， 缩放
+$animation_duration_slow: 0.22s; // 折叠，展开收起
+$animation_duration_base: 0.16s; // 切换， 缩放， 旋转，移入移出， 点击
+$animation_duration_fast: 0.1s; // 变色
+$animation_timing_function_default: linear;
+$animation_timing_function_enter: ease-out;
+$animation_timing_function_leave: ease-in;
+$animation_timing_function_show_hide: ease-in-out;
+
+// zIndex, 组件库的层级设置
+$zIndex_base: 1;
+$zIndex_xs: 9;
+$zIndex_sm: 99; // 一般pop组件的层级
+$zIndex_md: 999;
+$zIndex_lg: 9999; // toast 及 dialog等层级
+
+// 颜色
+$primary_color: var(--e-color-primary); // 蓝色、主色调
+$primary_color_dark_1: #2659bf; // 蓝色、主色调加深一阶
+$primary_color_dark_2: var(--e-color-primary-dark-2); // 蓝色、主色调加深二阶
+$primary_color_dark_3: #081f4d; // 蓝色、主色调加深三阶
+$primary_color_light_1: #ebf1fd; // 蓝色、主色调淡化一阶
+$primary_color_light_2: #d9e6ff; // 蓝色、主色调淡化二阶
+$primary_color_light_3: var(--e-color-primary-light-3); // 蓝色、主色调淡化三阶
+$primary_color_light_4: #8aaaed; // 蓝色、主色调淡化四阶
+$primary_color_light_5: var(--e-color-primary-light-5); // 蓝色、主色调淡化五阶
+$primary_color_light_6: #5889ea; // 蓝色、主色调淡化六阶
+$fail_color: var(--e-color-danger); // 红色、危险色
+$fail_color_dark_1: #bf2626; // 红色、危险色加深一阶
+$fail_color_dark_2: var(--e-color-danger-dark-2); // 红色、危险色加深二阶
+$fail_color_dark_3: #4d0808; // 红色、危险色加深三阶
+$fail_color_light_1: #fceaea; // 红色、危险色淡化一阶
+$fail_color_light_2: #ffd9d9; // 红色、危险色淡化二阶
+$fail_color_light_3: var(--e-color-danger-light-3); // 红色、危险色淡化三阶
+$fail_color_light_4: #f28585; // 红色、危险色淡化四阶
+$fail_color_light_5: var(--e-color-danger-light-5); // 红色、危险色淡化五阶
+$fail_color_light_6: #ea5858; // 红色、危险色淡化六阶
+$success_color: var(--e-color-success); // 绿色、成功色
+$success_color_dark_1: #1c8c67; // 绿色、成功色加深一阶
+$success_color_dark_2: var(--e-color-success-dark-2); // 绿色、成功色加深二阶
+$success_color_dark_3: #084d36; // 绿色、成功色加深三阶
+$success_color_light_1: #e5fff7; // 绿色、成功色淡化一阶
+$success_color_light_2: #d9fff2; // 绿色、成功色淡化二阶
+$success_color_light_3: var(--e-color-success-light-3); // 绿色、成功色淡化三阶
+$success_color_light_4: #7ee5c3; // 绿色、成功色淡化四阶
+$success_color_light_5: var(--e-color-success-light-5); // 绿色、成功色淡化五阶
+$success_color_light_6: #3dcc9c; // 绿色、成功色淡化六阶
+$warning_color: var(--e-color-warning); // 橙色、警告色
+$warning_color_dark_1: #d97021; // 橙色、警告色加深一阶
+$warning_color_dark_2: var(--e-color-warning-dark-2); // 橙色、警告色加深二阶
+$warning_color_dark_3: #4d2508; // 橙色、警告色加深三阶
+$warning_color_light_1: #fff5ed; // 橙色、警告色淡化一阶
+$warning_color_light_2: #ffead9; // 橙色、警告色淡化二阶
+$warning_color_light_3: var(--e-color-warning-light-3); // 橙色、警告色淡化三阶
+$warning_color_light_4: #ffbe8c; // 橙色、警告色淡化四阶
+$warning_color_light_5: var(--e-color-warning-light-3); // 橙色、警告色淡化五阶
+$warning_color_light_6: #ffa159; // 橙色、警告色淡化六阶
+$yellow_color: #e5c00b; // 黄色-备用色
+$yellow_color_dark_1: #b29500; // 黄色-备用色加深一阶
+$yellow_color_dark_2: #8c770e; // 黄色-备用色加深二阶
+$yellow_color_dark_3: #4d4108; // 黄色-备用色加深三阶
+$yellow_color_light_1: #ffffe6; // 黄色-备用色淡化一阶
+$yellow_color_light_2: #ffffbf; // 黄色-备用色淡化二阶
+$yellow_color_light_3: #fffb8f; // 黄色-备用色淡化三阶
+$yellow_color_light_4: #fff266; // 黄色-备用色淡化四阶
+$yellow_color_light_5: #ffdf40; // 黄色-备用色淡化五阶
+$yellow_color_light_6: #ffd70d; // 黄色-备用色淡化六阶
+$cyan_color: #36b2b2; // 青色-备用色
+$cyan_color_dark_1: #1c8c8c; // 青色-备用色加深一阶
+$cyan_color_dark_2: #0b7373; // 青色-备用色加深二阶
+$cyan_color_dark_3: #084d4d; // 青色-备用色加深三阶
+$cyan_color_light_1: #e6ffff; // 青色-备用色淡化一阶
+$cyan_color_light_2: #d4faf5; // 青色-备用色淡化二阶
+$cyan_color_light_3: #aaf2eb; // 青色-备用色淡化三阶
+$cyan_color_light_4: #7ee5df; // 青色-备用色淡化四阶
+$cyan_color_light_5: #4cd9d3; // 青色-备用色淡化五阶
+$cyan_color_light_6: #3dcccc; // 青色-备用色淡化六阶
+$purple_color: #4c2ee5; // 紫色-备用色
+$purple_color_dark_1: #4026bf; // 紫色-备用色加深一阶
+$purple_color_dark_2: #29158c; // 紫色-备用色加深二阶
+$purple_color_dark_3: #13084d; // 紫色-备用色加深三阶
+$purple_color_light_1: #ebf1fd; // 紫色-备用色淡化一阶
+$purple_color_light_2: #d5e1fa; // 紫色-备用色淡化二阶
+$purple_color_light_3: #b5a9f2; // 紫色-备用色淡化三阶
+$purple_color_light_4: #9a8aed; // 紫色-备用色淡化四阶
+$purple_color_light_5: #836df2; // 紫色-备用色淡化五阶
+$purple_color_light_6: #7058ea; // 紫色-备用色淡化六阶
+$disabled_color: var(--e-text-color-disabled); // 禁用色
+$text_color_primary: var(--e-text-color-primary); // 主要文字色
+$text_color_minor: var(--e-text-color-secondary); // 次要文字色
+$text_color_hint: var(--e-text-color-third); // 提示文字色
+$shadow_color: #081f4d; // 阴影色 8%
+$white_color: var(--e-color-white); // 白色
+$black_color: var(--e-color-black); // 黑色
+
+// 字号
+$font_size_h1: 20 * 2px; // 页面标题-大
+$font_size_h1_height: 24 * 2px; // 页面标题-大-高度
+$font_size_h2: 18 * 2px; // 页面标题-中
+$font_size_h2_height: 22 * 2px; // 页面标题-中-高度
+$font_size_h3: 16 * 2px; // 页面标题-小
+$font_size_h3_height: 20 * 2px; // 页面标题-小-高度
+$font_size_l1: 16 * 2px; // 栏目、列表标题-大
+$font_size_l1_height: 20 * 2px; // 栏目、列表标题-大-高度
+$font_size_l2: 15 * 2px; // 栏目、列表标题-中
+$font_size_l2_height: 19 * 2px; // 栏目、列表标题-中-高度
+$font_size_l3: 14 * 2px; // 栏目、列表标题-小
+$font_size_l3_height: 18 * 2px; // 栏目、列表标题-小-高度
+$font_size_base1: 15 * 2px; // 正文-大
+$font_size_base1_height: 19 * 2px; // 正文-大-高度
+$font_size_base2: 14 * 2px; // 正文-小
+$font_size_base2_height: 18 * 2px; // 正文-小-高度
+$font_size_s1: 14 * 2px; // 辅助文本-大
+$font_size_s1_height: 18 * 2px; // 辅助文本-大-高度
+$font_size_s2: 13 * 2px; // 辅助文本-中
+$font_size_s2_height: 17 * 2px; // 辅助文本-中-高度
+$font_size_s3: 12 * 2px; // 辅助文本-小
+$font_size_s3_height: 16 * 2px; // 辅助文本-小-高度
+$font_size_info: calc(var(--e-font-size-info) * 2); // 信息文本、标签
+$font_size_info_height: 15 * 2px; // 信息文本、标签-高度
+$font_size: var(--e-font-size-medium-m); // 基础字号，一般用于列表文字、详情正文
+$font_size_s: var(--e-font-size-base); // 辅助文本、释译文本
+$font_size_l: var(--e-font-size-large); // 栏目一级标题
+$font_size_xl: var(--e-font-size-extra-large); // 页面标题
+$font_size_icon: calc(var(--e-font-size-base) + 2px); // 字体图标大小
+
+// 字重
+$font_regular: var(--e-font-weight-regular); // 标准
+$font_medium: var(--e-font-weight-medium); // 中等
+$font_bold: var(--e-font-weight-bold); // 加粗
+
+// 间距
+$spacer_xs: var(--e-space-xs); // 最小极限
+$spacer_base: calc(var(--e-space-m) / 2); // 基础间距
+$spacer_s: calc($spacer_base * 2); //常用于图形和文字中的间距
+$spacer_m: calc($spacer_base * 3); // 按钮间距
+$spacer_l: calc($spacer_base * 4); // 元件模块间距
+$spacer_xl: calc($spacer_base * 5); // 常规页面边距、栏目模块间距
+$spacer_xxl: calc($spacer_base * 6); // 常规页面边距加宽
+$spacer_xxxl: calc($spacer_base * 10); // M8子页边距、表单横向间距
+$spacer_large: calc($spacer_base * 12); // M8首页边距
+
+// 背景
+$background_color: var(--e-fill-color-light); // 页面背景色
+$popover_background1_color: #081f4d; // 气泡浮层页面底部遮罩 10%
+$popover_background2_color: #081f4d; // 气泡浮层页面底部遮罩加深一阶 20%
+$modal_background_color: #081f4d; // 功能性模态窗、弹窗、提示页面 60%
+
+// 边框
+$border_color: var(--e-border-color); // 边框色(用于有白色底场景)
+$border_color_dark: #c2c6cc; // 边框色加深(用于有底色场景)
+$border_height: 0.5 * 2px; // 线条高度
+$dummy_line_color: #dde0e4; // 边框色(用于有白色底场景)
+$dummy_line_color_dark: #c2c6cc; // 边框色加深(用于有底色场景)
+$dummy_line: 1px; // 线条高度
+$line_title_width: 4px; // 标题标签宽度
+$line_tabs_width: 32px; // tab下划线粗细
+$line_tabs_height: 3px;
+$line_tabs_radius: 100%;
+
+// 圆角
+$radius_base: calc(var(--e-border-radius-base) / 4); // 常用于图标、按钮、表单	2
+$radius_m: calc($radius_base * 2); // 常用于卡片	4
+$radius_l: calc($radius_base * 5); // 常用于菜单容器、大卡片、页面容器	10
+$radius_max: 100%; // 可点击按钮
+
+// 行高
+$line_height: $font_size + 8px; // font_size + 8; // 列表文字行高		基础字号+8px
+$line_height_s: $font_size_s + 8px; // font_size-s + 8; // 提示本文行高
+$line_height_l: $font_size_l + 8px; // font_size_l + 8; // 栏目标题行高
+$line_height_xl: $font_size_xl + 8px; // font_size_xl + 8; // 页面标题行高
+$line_height_xxl: $font_size_xl + 8px * 2; // font_size_xl + 8 * N; // 特殊文本行高
+$form_height_s: var(--e-form-line-height-small); // 表单项行高/按钮最小高度
+$form_height_m: var(--e-form-line-height-base); // 表单项行高/按钮常规高度
+$form_height_l: var(--e-form-line-height-large); // 表单项行高/按钮加高一阶
+
+// 阴影
+$shadow_middle_color: #081f4d; // 阴影视觉居中态颜色  8%	主色调加深三阶 8%
+$shadow_middle_xy: 0 0; // 阴影视觉居中态颜色XY偏移  加两个维度
+$shadow_middle_dim: 15px; // 阴影视觉居中态颜色模糊半径
+$shadow_middle_extend: 0px; // 阴影视觉居中态颜色扩展半径
+$shadow_up_color: #081f4d; // 阴影视角向上态  8%	主色调加深三阶 8%
+$shadow_up_xy: 0 -3px; // 阴影视角向上态XY偏移
+$shadow_up_dim: 15px; // 阴影视角向上态模糊半径
+$shadow_up_extend: 0px; // 阴影视角向上态扩展半径
+$shadow_down_color: #081f4d; // 阴影视角向下态 8%	主色调加深三阶 8%
+$shadow_down_xy: 0 3px; // 阴影视角向下态XY偏移
+$shadow_down_dim: 15px; // 阴影视角向下态模糊半径
+$shadow_down_extend: 0px; // 阴影视角向下态扩展半径
+$shadow_left_color: #081f4d; // 阴影视角向左态 50%	主色调加深三阶  50%
+$shadow_left_xy: -3px 0; // 阴影视角向左态XY偏移
+$shadow_left_dim: 8px; // 阴影视角向左态模糊半径
+$shadow_left_extend: 0px; // 阴影视角向左态扩展半径
+$shadow_right_color: #081f4d; // 阴影视角向右态  50%	主色调加深三阶 50%
+$shadow_right_xy: 3px 0; // 阴影视角向右态XY偏移
+$shadow_right_dim: 8px; // 阴影视角向右态模糊半径
+$shadow_right_extend: 0px; // 阴影视角向右态扩展半径
+
+// 图标
+$icon_app: 40px; // 应用图标
+$icon_tab: 25px; // 操作型图标，用于tab、弹出工具栏等
+$icon_btn: 20px; // 按钮中的图标
+$icon_document: 32px; // 附件大小
+$icon_arrows_color: var(--e-text-color-third); // 箭头图标用色
+$icon_arrows_color_disabled: var(--e-text-color-disabled); // 箭头图标禁用色
+
+// 尺寸
+$font_size_h1_aged: 24px; // 文字大(适老)
+$font_size_h2_aged: 22px; // 文字中(适老)
+$font_size_h3_aged: 20px; // 文字小(适老)
+$btn_aged: $form_height_l; // 按钮尺寸(适老)	52px
+$btn_font_aged: $font_size_h2_aged; // 按钮文字大小(适老)	22、24
+$form_height_aged: calc($spacer_base * 16); // 表单项行高(适老)	64px
+$spacer_aged_aged: calc($spacer_base * 6); // 间距(适老)	24px
+$icon_app_aged: 60px; // 应用图标	icon_app*1.5
+$icon_tab_aged: 50px; // 操作型图标，用于tab、弹出工具栏等 icon_tab*1.5
+$icon_btn_aged: 30px; // 按钮中的图标 icon_btn*1.5
+$icon_document_aged: 48px; // 附件大小	icon_document*1.5

@@ -1,0 +1,39 @@
+{
+  "skill_name": "mobile-smallscreen-lowcode",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "请把当前仓库里的 worlddemo.zip 转成一个 IOC 低码组件。要求输出到当前项目根目录的 src/components/card_components 下，顶部状态栏、顶部导航栏、底部黑色 home indicator 不需要重构，业务区优先使用 em-field、em-uploader、em-button、em-stepper，并把业务图标尽量落到 img/ 目录。",
+      "expected_output": "生成完整的 IOC 组件目录、conversion_report.md，执行 ioc create 和 ioc start 命令，自动化测试通过。",
+      "files": [
+        "worlddemo.zip"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "根据 Figma 设计稿生成一个商品详情低码组件。Figma 数据：{ \"fileKey\": \"9nEUPUYtLMIcUauoIpVWku\", \"nodeId\": \"1-2706\" }。组件需要包含商品图片轮播、标题价格、规格选择和加入购物车按钮。",
+      "expected_output": "通过 figma-mcp 获取设计数据，生成符合 IOC 规范的完整组件目录，包含商品详情相关的 em-swipe、em-image、em-button 等组件，执行测试通过。",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "不用压缩包也不用设计稿，直接帮我生成一个售后申请 IOC 低码组件，包含退款说明文本域、上传凭证照片、联系电话输入框、退款商品列表、数量调整、退款小计和提交按钮，输出到 src/components/card_components。",
+      "expected_output": "直接生成一个符合 IOC 规范的低码组件目录，优先使用 em-field、em-uploader、em-button、em-stepper，config.js 包含完整的业务配置项，测试通过。",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "我有一个 Google AI Studio 生成的世界探索页面压缩包 worlddemo.zip，请帮我分析里面的代码结构，告诉我有哪些 UI 区域，然后转成低码组件。组件名叫 WorldExplorer。",
+      "expected_output": "先运行 analyze_source.py 输出源码分析结果，然后创建名为 WorldExplorer 的 IOC 组件，按分析结果进行 React→Vue 转换，测试通过。",
+      "files": [
+        "worlddemo.zip"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "帮我生成一个活动报名低码组件，需要有活动封面图、活动标题和描述、报名表单（姓名、手机号、部门选择）、报名须知勾选、提交报名按钮。要求配置项尽量丰富，可以在低码平台灵活调整。",
+      "expected_output": "生成活动报名组件，使用 em-image、em-field、em-checkbox、em-button，config.js 中包含丰富的可配置项（文字、颜色、图片等），测试通过。",
+      "files": []
+    }
+  ]
+}

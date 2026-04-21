@@ -1,0 +1,39 @@
+// 为了防止多人协作时出现冲突，在v8.3.10版本之后，pages.json不再生成路由pages和分包路由subPackages的信息。路由配置仍然由各模块下的router.js文件中的配置以生效。
+// 其他pages.json下的配置仍然在此处生效。
+// 完整的pages.json信息在构建过程中会同步到node_modules/@epoint-mrc/.cache/${UNI_PLATFORM}/pages.router.json中，如果需要可以查看该文件。
+{
+    "globalStyle": {
+        "h5": {
+            "navigationStyle": "custom"
+        },
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "",
+        "backgroundColor": "#F8F8F8",
+        "mp-weixin": {
+            "navigationBarBackgroundColor": "#F8F8F8"
+        }
+    },
+    "easycom": {
+        "autoscan": true,
+        "custom": {
+            "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue",
+            "^em-(chart|table-col|table|pagination)": "@epoint-mrc/em-components/src/sub_components/em-$1/em-$1.vue",
+            "^em-(.*)": "@epoint-mrc/em-components/src/components/em-$1/em-$1.vue",
+            "^ep-(.*)-m$": "@epframe/eui-core-m/src/components/default/ep-$1-m/ep-$1-m.vue",
+            "^e-(.*)-m$": "@epoint-mfe/eui-components/src/components/ep-$1/ep-$1.vue",
+            "^ep-(.*)": "@epoint-mfe/eui-components/src/components/ep-$1/ep-$1.vue",
+            "^workflow-(.*)": "@epoint-mfe/eui-components/src/components/ep-workflow/workflow-$1/workflow-$1.vue",
+            "^theme-provider": "@/theme/theme-provider.vue"
+        }
+    },
+    "insetLoader": {
+        "config": {
+            "ejsApi": "<em-ejs-api ref='emEjsApiRef'></em-ejs-api>"
+        },
+        "label": ["ejsApi"],
+        "rootEle": ".*",
+        "setupRef": {
+            "ejsApi": "emEjsApiRef"
+        }
+    }
+}

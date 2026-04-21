@@ -1,0 +1,191 @@
+.epoint-component {
+    background-color: #f5f6fa;
+    min-height: 100vh;
+}
+.device-info-wrap {
+    margin: 12px 12px 0 12px;
+    display: flex;
+    padding: 12px;
+    align-items: center;
+    border-radius: 8px;
+    background: #fff;
+    .info-left {
+        margin-right: 10px;
+        width: 68px;
+        height: 68px;
+        img {
+            border-radius: 4px;
+            width: 68px;
+            height: 68px;
+        }
+    }
+    .info-right {
+        .device-name {
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .device-type {
+            margin-top: 8px;
+            color: #999;
+            font-size: 12px;
+            font-weight: 400;
+        }
+    }
+}
+.from-wrap {
+    margin: 12px 12px 20px 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff;
+    .rate-wrap {
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 0.5px solid #d6d6d6;
+        .em-rate {
+            margin-left: auto;
+        }
+        ::v-deep {
+            .em-icon {
+                display: block;
+            }
+        }
+    }
+    .rate-label {
+        color: #333;
+        font-size: 14px;
+        font-weight: 400;
+    }
+    .radio-icon {
+        width: 16px;
+        height: 16px;
+    }
+    .all-rate {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 0.5px solid #d6d6d6;
+        .rate-label {
+            margin-bottom: 12px;
+        }
+        ::v-deep {
+            .em-radio-custom-icon {
+                height: 16px;
+            }
+            .em-radio {
+                align-items: center;
+                margin-right: 24px;
+            }
+            .em-radio--text {
+                margin-left: 8px;
+            }
+        }
+    }
+    .feedback‌-wrap {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 0.5px solid #d6d6d6;
+        .rate-label {
+            margin-bottom: 12px;
+        }
+        .feedback‌-textarea {
+            width: 100%;
+            height: 82px;
+            font-size: 12px;
+            font-weight: 400;
+        }
+    }
+    .picture-wrap {
+        .rate-label {
+            margin-bottom: 12px;
+        }
+        .em-uploader {
+            padding: 0;
+        }
+        .em-upload {
+            margin: 5px 8px 0 0;
+            display: flex;
+            align-items: center;
+            width: 76px;
+            height: 76px;
+            border-radius: 1px;
+            background: #f5f6f7;
+            justify-content: center;
+            img {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    }
+}
+.btn-wrap {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;
+    background-color: #fff;
+}
+.btn {
+    display: flex;
+    height: 38px;
+    padding: 10px 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 8px;
+    background: #e2001f;
+    box-sizing: border-box;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 400;
+}
+.rate-content-wrap {
+    margin: 12px;
+    padding: 12px;
+    background: #fff;
+}
+.rate-content-wrap {
+    .content-top {
+        display: flex;
+        align-items: center;
+        .top-left {
+            display: flex;
+            align-items: center;
+            .top-left-text {
+                color: #666;
+                font-size: 12px;
+                font-weight: 400;
+            }
+            ::v-deep {
+                .em-icon {
+                    display: block;
+                }
+            }
+        }
+        .top-right {
+            margin-left: auto;
+            color: #666;
+            font-size: 12px;
+            font-weight: 400;
+        }
+    }
+    .content-wrap {
+        margin-top: 8px;
+        color: #333;
+        font-size: 13px;
+        font-weight: 400;
+    }
+    .rate-img {
+        .em-uploader {
+            padding: 0;
+        }
+        ::v-deep {
+            .em-uploader__preview {
+                margin: 8px 8px 0 0;
+            }
+        }
+    }
+}

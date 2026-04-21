@@ -1,0 +1,27 @@
+{
+  "name": "mobile-smallscreen-lowcode-skills",
+  "version": "1.0.0",
+  "description": "AI Skills for generating M8 IOC small-screen low-code components from various sources (Google AI Studio zip, Figma designs, text descriptions)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juanjuan/mobile-smallscreen-lowcode.git"
+  },
+  "keywords": [
+    "skills",
+    "lowcode",
+    "ioc",
+    "m8",
+    "mobile",
+    "component",
+    "figma",
+    "google-ai-studio"
+  ],
+  "author": "juanjuan",
+  "license": "MIT",
+  "skills": {
+    "mobile-smallscreen-lowcode": {
+      "path": "mobile-smallscreen-lowcode",
+      "description": "将各种来源（Google AI Studio zip、Figma 设计稿、文字描述）转换为 M8 IOC 小屏低代码组件"
+    }
+  }
+}

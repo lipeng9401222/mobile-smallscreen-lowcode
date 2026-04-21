@@ -1,0 +1,52 @@
+.register {
+    ::v-deep .em-tabs__track {
+        flex-direction: column;
+    }
+    .content {
+        margin-top: calc(env(safe-area-inset-top) + 0);
+        margin-top: calc(constant(safe-area-inset-top) + 0);
+    }
+
+    .van-form {
+        padding: 0 8px;
+    }
+
+    .reg-notice {
+        margin: 10px 24px;
+        padding: 12px 10px;
+        font-size: 12px;
+    }
+
+    .code-btn {
+        .van-field__button {
+            height: 28px;
+            margin-top: -10px;
+
+            .van-button--small {
+                height: 28px;
+            }
+        }
+    }
+
+    .btn-size {
+        font-size: 16px;
+    }
+
+    footer {
+        margin-bottom: 20px;
+        padding: 20px 14px 40px;
+        text-align: center;
+    }
+
+    .login-agreement {
+        font-size: 14px;
+        .em-checkbox {
+            display: inline-block;
+        }
+    }
+    
+    .em-register-btn {
+        display: block;
+        margin-top: 20px;
+    }
+}
