@@ -200,13 +200,18 @@ python scripts/analyze_source.py "<zip或目录路径>" --output "<输出json>"
 
 推荐映射：
 
-- 售后申请、评价、退款说明、上传凭证 → `MineEvaluateAdd`
-- 订单确认、金额小计、底部提交栏、商品价格标题 → `OrderPay`
-- 商品列表、数量加减、供应商分组 → `ShoppingCart`
-- 轮播或卡片滑动展示 → `GoodsSimilar`
+**完整模板**（可直接打开参考）：
+
+- 商品列表、数量加减、供应商分组、订单确认、底部提交栏 → `ShoppingCart`（⭐ 通用首选）
 - 客服电话、弹框面板、拨号交互 → `CustomerServiceSheet`
 - 环形图、饼图、简单数据占比 → `RingCharts`
 - 柱状+折线混合图、双Y轴、dataZoom → `ZbMixedChartsEmChart`（进阶，config 较大）
+
+**代码片段参考**（见 `template-index.md` 底部，无完整模板）：
+
+- 轮播或卡片滑动展示 → template-index.md「轮播/滑动卡片」片段
+- 售后申请、评价、退款说明、上传凭证 → template-index.md「评价表单」片段
+- 金额小计、价格拆分展示 → template-index.md「订单确认/价格展示」片段
 
 不要把整套模板机械拼接，按业务区拆解，只复用结构和配置组织方式。
 

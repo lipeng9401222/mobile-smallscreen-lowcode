@@ -2,73 +2,29 @@
 
 只打开与当前任务最接近的 1 到 2 个模板，不要一次性把全部模板内容加载到上下文里。
 
-## 模板选择建议
+## 完整模板
 
-### `MineEvaluateAdd`
-
-适合：
-
-- 售后申请
-- 评价表单
-- 文本说明
-- 上传图片或视频
-- 提交按钮
-
-关注点：
-
-- `em-rate`
-- `textarea`
-- `em-uploader`
-- `onSubmit`
-
-### `OrderPay`
+### `ShoppingCart`（通用业务模板 ⭐ 推荐首选）
 
 适合：
 
-- 订单确认
-- 金额小计
-- 底部提交栏
-- 备注输入
-- 商品价格标题、价格拆分展示
+- 商品列表、数量增减、勾选、汇总
+- 供应商分组、tab 切换
+- 底部操作栏（全选 + 合计 + 提交按钮）
+- 滑动删除
 
 关注点：
 
-- 金额展示
-- 列表小计
-- 底部操作条
-- 价格整数/小数分离
-- 标签信息
+- `em-stepper`、`em-checkbox`、`em-tabs`、`em-swipe-cell`、`em-button`
+- filters 价格整数/小数分离
+- 列表事件（onStoreClick / onGoodsClick / onDelete / onNumChange / onSubmit）
+- 全选/反选逻辑、总价计算
 
-### `ShoppingCart`
+也可参考用于：
 
-适合：
-
-- 商品列表
-- 数量增减
-- 勾选
-- 汇总
-
-关注点：
-
-- `em-stepper`
-- `em-checkbox`
-- 列表事件
-- 子组件拆分
-
-### `GoodsSimilar`
-
-适合：
-
-- 滑动卡片
-- 轮播展示
-- 图片宫格
-
-关注点：
-
-- `em-swipe`
-- 图片卡片布局
-- 自定义指示器
-- 空状态处理
+- 订单确认页（去掉 tabs + stepper，加备注输入）
+- 售后申请（替换列表为表单组件）
+- 轮播展示（替换列表为 em-swipe）
 
 ### `CustomerServiceSheet`
 
@@ -121,3 +77,51 @@
 - 图例（legend）配置
 
 > **注意：** 该模板 config.js 较为庞大（1300+ 行），仅在需要复杂图表时参考，简单图表请优先使用 `RingCharts`。
+
+---
+
+## 无完整模板的场景 — 关键代码片段
+
+以下场景不提供完整模板，但提供核心代码片段。生成时以 `ShoppingCart` 为骨架参考，替换业务部分即可。
+
+### 轮播/滑动卡片
+
+**核心组件**：`em-swipe` + `em-swipe-item` + `em-empty`
+
+```vue
+<!-- 轮播容器 -->
+<em-swipe :autoplay="autoplay ? interval : -1" :duration="300" @change="onSwiperChange">
+    <em-swipe-item v-for="(group, idx) in groupedData" :key="idx">
+        <div class="product-row">
+            <div v-for="item in group" :key="item.id" class="product-card" @click="onItemClick(item)">
+                <image :src="item.imageUrl" mode="aspectFill" lazy-load />
+                <div class="title">{{ item.title }}</div>
+                <div class="price">{{ item.price }}</div>
+            </div>
+        </div>
+    </em-swipe-item>
+    <!-- 自定义指示器 -->
+    <template #indicator>
+        <div class="custom-indicator">
+            <i v-for="(g, i) in groupedData" :key="i"
+               :style="i === currentPage ? activeStyle : normalStyle"></i>
+        </div>
+    </template>
+</em-swipe>
+```
+
+**数据分组**：
+
+```js
+// 将平铺数据按每行 N 个分组
+computed: {
+    groupedData() {
+        const n = this.config?.options?.itemsPerRow || 3;
+        const groups = [];
+        for (let i = 0; i < this.data.length; i += n) {
+            groups.push(this.data.slice(i, i + n));
+        }
+        return groups;
+    }
+}
+```
