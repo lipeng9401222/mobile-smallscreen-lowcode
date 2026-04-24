@@ -29,8 +29,6 @@ npx @anthropic-ai/skills add <github-repo-url> --skill mobile-smallscreen-lowcod
 - `references/knowledge` — M8 框架知识库
 - `references/ioc-docs` — IOC 开发文档
 - `references/ioc-templates` — IOC 组件模板（5 个参考模板）
-- `references/vue2-frame` — Vue2 框架参考
-- `references/vue3-frame` — Vue3 框架参考
 - `scripts/analyze_source.py` — React+Tailwind 源码分析器
 - `scripts/figma_parser.py` — Figma 设计数据解析器
 - `scripts/manual_scaffold.py` — 手工骨架生成器
