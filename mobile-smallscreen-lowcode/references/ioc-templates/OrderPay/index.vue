@@ -1,19 +1,5 @@
 <template>
     <div class="epoint-component">
-        <!-- <div class="top">
-            <div class="top_container">
-                <div class="top_left">
-                    <div class="top_title">收货地址</div>
-                    <div class="address">江苏省苏州市新点小区985室</div>
-                    <div class="contact">
-                        <div class="contact_name">张三</div>
-                        <div class="contact_phone">13800000000</div>
-                    </div>
-                </div>
-                <img class="arrow" src="./img/img1.png" alt="" />
-            </div>
-            <img class="bottom" src="./img/bottom.png" alt="">
-        </div> -->
         <div class="list_container" v-for="(item, index) in myData[0].productlist" :key="index">
             <div class="item_top" @click="clickItem(item)">
                 <div class="item_top_left">
@@ -95,13 +81,12 @@ export default {
     },
     data() {
         return {
-            showPopover: false,
             remarkValue: []
         };
     },
     watch: {
         myData: {
-            handler(newVal, oldVal) {
+            handler(newVal) {
                 if (newVal.length > 0) {
                     this.remarkValue = new Array(newVal.length).fill('');
                 }
@@ -110,14 +95,11 @@ export default {
         }
     },
     computed: {
-        // 注意：使用el.style等操作DOM的方式在微信小程序不支持
         boxOptions() {
             const { boxOptions } = this.config.options;
             const boxmodel = boxOptions.boxmodel;
-            //根据实际情况进行单位修改
             Object.keys(boxmodel).forEach((key) => {
                 if (!isNaN(Number(boxmodel[key]))) {
-                    //是纯数字才加单位
                     boxmodel[key] = boxmodel[key] + 'px';
                 }
             });
@@ -125,28 +107,10 @@ export default {
         },
         myData() {
             return this.data;
-        },
-        textContent() {
-            const { title } = this.config.options;
-            let newTitle = title.content;
-
-            return newTitle;
-        },
-        // 位置设置
-        positionSetting() {
-            let { positionSetting } = this.config.options;
-
-            if (positionSetting.isOpen) {
-                positionSetting.position = 'relative';
-            } else {
-                positionSetting.position = 'static';
-            }
-
-            return positionSetting;
         }
     },
     created() {
-        this.submitOrderThrottle = this.throttle(this.submitOrder, 2000)
+        this.submitOrderThrottle = this.throttle(this.submitOrder, 2000);
     },
     mounted() {
         this.eventGenerate('onMounted', '自定义参数');
@@ -168,20 +132,11 @@ export default {
         // 格式化价格显示，将小数部分字体大小改为12px
         formatPrice(price) {
             if (!price) return '';
-
             const priceStr = price.toString();
             const decimalIndex = priceStr.indexOf('.');
-
-            if (decimalIndex === -1) {
-                // 没有小数部分
-                return priceStr;
-            }
-
-            // 分割整数部分和小数部分
+            if (decimalIndex === -1) return priceStr;
             const integerPart = priceStr.substring(0, decimalIndex);
             const decimalPart = priceStr.substring(decimalIndex);
-
-            // 返回包含样式的小数部分
             return `${integerPart}<span style="font-size: 12px">${decimalPart}</span>`;
         },
         // 提交订单
@@ -210,8 +165,7 @@ export default {
             this.eventGenerate('onSubmit', { checkArr, products });
         },
         getType(list) {
-            const result = list.map((item) => `${item.picname}:${item.picvalue}`).join('; ');
-            return result;
+            return list.map((item) => `${item.picname}:${item.picvalue}`).join('; ');
         },
         getTotalPrice(products) {
             let total = 0;
@@ -221,7 +175,6 @@ export default {
             return total;
         }
     },
-    beforeDestroy() {},
     // 所有组件必须设置_getConfig和_getMockData，用于低码平台获取组件配置信息
     _getConfig: () => defaultConfig,
     _getMockData: () => mockData
@@ -230,11 +183,4 @@ export default {
 
 <style lang="scss" scoped>
 @import './css/index.scss';
-.title {
-    display: flex;
-    flex-direction: row;
-    .title_name {
-        width: fit-content;
-    }
-}
 </style>

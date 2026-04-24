@@ -1,0 +1,37 @@
+.customer-service-sheet {
+    width: 100%;
+}
+
+.show-box {
+    text-align: center;
+    color: #8591a2;
+    font-size: 14px;
+    line-height: 40px;
+    cursor: pointer;
+    background: repeating-linear-gradient(
+        120deg,
+        transparent 15px,
+        transparent 20px,
+        hsla(0, 0%, 87.1%, 0.4588235294) 0,
+        hsla(0, 0%, 87.1%, 0.4588235294) 25px
+    );
+}
+
+::v-deep .customer-service-sheet__popup {
+    .em-action-sheet__header {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333333;
+    }
+
+    .customer-service-sheet__action {
+        font-size: 15px;
+        font-weight: 500;
+        color: #666666;
+    }
+
+    .em-action-sheet__cancel {
+        font-size: 16px;
+        color: #666666;
+    }
+}

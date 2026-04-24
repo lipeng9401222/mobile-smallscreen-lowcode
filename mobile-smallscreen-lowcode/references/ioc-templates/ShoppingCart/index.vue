@@ -1,11 +1,3 @@
-<!--
- * @作者: 范绪超
- * @创建时间: 2025-12-11 11:10:07
- * @修改时间: 2026-01-23 17:19:16
- * @版本: [1.0]
- * @版权: 国泰新点软件股份有限公司
- * @描述: 购物车组件
--->
 <template>
     <div class="epoint-component">
         <div class="em-container" :style="boxOptions">
@@ -144,7 +136,6 @@ export default {
             if (value) {
                 return value.toString().split('.')[0];
             }
-
             return '0';
         },
         // 获取价格小数部分
@@ -153,7 +144,6 @@ export default {
             if (value) {
                 return '.' + (value.toFixed(2).toString().split('.')[1] || '00');
             }
-
             return '.00';
         }
     },
@@ -197,18 +187,6 @@ export default {
             });
 
             return boxOptions;
-        },
-        // 位置设置
-        positionSetting() {
-            let { positionSetting } = this.config.options;
-
-            if (positionSetting.isOpen) {
-                positionSetting.position = 'relative';
-            } else {
-                positionSetting.position = 'static';
-            }
-
-            return positionSetting;
         }
     },
 
@@ -218,16 +196,13 @@ export default {
     methods: {
         /**
          * @description: 初始化购物车列表，添加选中状态
-         * @param {Array} data - 原始数据
          */
         initCartList(data) {
             if (!Array.isArray(data) || data.length === 0) {
                 this.cartList = [];
-
                 return;
             }
 
-            // 深拷贝数据并添加 checked 状态
             this.cartList = data.map((supplier) => ({
                 ...supplier,
                 checked: false,
@@ -239,38 +214,27 @@ export default {
         },
 
         /**
-         * @description: 获取供应商图片（如果没有则使用默认图片）
-         * @param {Object} item - 供应商数据
-         * @return {String} 图片地址
+         * @description: 获取供应商图片
          */
         getSupplierImg(item) {
-            // 如果接口返回了供应商图片字段则使用，否则使用默认图片
             return item.supplierimg || item.storeimg || require('./images/img_store_default.png');
         },
 
         /**
          * @description: 获取规格显示文本
-         * @param {Object} product - 商品数据
-         * @return {String} 规格文本
          */
         getSpecificationText(product) {
-            // 优先使用 brandname，其次解析 specification
             if (product.brandname) {
                 return product.brandname;
             }
             if (product.specification) {
-                // 取第一个规格项
-                const firstSpec = product.specification.split('/')[0];
-
-                return firstSpec || '';
+                return product.specification.split('/')[0] || '';
             }
-
             return '';
         },
 
         /**
          * @description: 处理供应商点击事件
-         * @param {Object} item - 供应商数据
          */
         handleStoreClick(item) {
             this.eventGenerate('onStoreClick', {
@@ -281,11 +245,8 @@ export default {
 
         /**
          * @description: 处理商品点击事件
-         * @param {Object} product - 商品数据
-         * @param {Object} supplier - 供应商数据
          */
         handleGoodsClick(product, supplier) {
-            console.log('点击11111');
             this.eventGenerate('onGoodsClick', {
                 product,
                 supplier: {
@@ -297,33 +258,24 @@ export default {
 
         /**
          * @description: 处理供应商选择变化
-         * @param {Object} item - 供应商数据
          */
         handleStoreChange(item) {
-            // 更新该供应商下所有商品的选中状态
             item.products.forEach((product) => {
                 product.checked = item.checked;
             });
-            // 检查是否全选
             this.allChecked = this.isCheckAll();
         },
 
         /**
          * @description: 处理商品选择变化
-         * @param {Boolean} flag - 选中状态
-         * @param {Object} product - 商品数据
-         * @param {Object} supplier - 供应商数据
          */
         handleGoodsChange(flag, product, supplier) {
-            // 检查该供应商下是否所有商品都选中
             supplier.checked = supplier.products.every((p) => p.checked);
-            // 检查是否全选
             this.allChecked = flag ? this.isCheckAll() : false;
         },
 
         /**
          * @description: 处理全选变化
-         * @param {Boolean} val - 全选状态
          */
         handleAllCheckedChange(val) {
             this.cartList.forEach((supplier) => {
@@ -336,8 +288,6 @@ export default {
 
         /**
          * @description: 处理商品数量变化
-         * @param {Object} product - 商品数据
-         * @param {Object} supplier - 供应商数据
          */
         handleNumChange(product, supplier) {
             this.eventGenerate('onNumChange', {
@@ -350,11 +300,8 @@ export default {
 
         /**
          * @description: 处理删除商品
-         * @param {Object} product - 商品数据
-         * @param {Object} supplier - 供应商数据
          */
         handleDelete(product, supplier) {
-            console.log('删除');
             this.eventGenerate('onDelete', {
                 rowguid: product.rowguid,
                 productguid: product.productguid,
@@ -366,7 +313,6 @@ export default {
          * @description: 处理确认下单
          */
         handleSubmit() {
-            // 获取所有选中的商品
             const selectedProducts = [];
 
             this.cartList.forEach((supplier) => {
@@ -388,7 +334,6 @@ export default {
 
         /**
          * @description: 判断是否全选
-         * @return {Boolean}
          */
         isCheckAll() {
             return this.cartList.every((supplier) => supplier.checked);
@@ -396,7 +341,6 @@ export default {
 
         /**
          * @description: 计算总价
-         * @return {String} 总价（保留两位小数）
          */
         calculateTotalPrice() {
             let total = 0;
@@ -415,7 +359,6 @@ export default {
         }
     },
 
-    beforeDestroy() {},
     // 所有组件必须设置_getConfig和_getMockData，用于低码平台获取组件配置信息
     _getConfig: () => defaultConfig,
     _getMockData: () => mockData

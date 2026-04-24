@@ -201,12 +201,19 @@ python scripts/analyze_source.py "<zip或目录路径>" --output "<输出json>"
 推荐映射：
 
 - 售后申请、评价、退款说明、上传凭证 → `MineEvaluateAdd`
-- 订单确认、金额小计、底部提交栏 → `OrderPay`
+- 订单确认、金额小计、底部提交栏、商品价格标题 → `OrderPay`
 - 商品列表、数量加减、供应商分组 → `ShoppingCart`
-- 商品价格标题、说明信息 → `GoodsInfo`
 - 轮播或卡片滑动展示 → `GoodsSimilar`
+- 客服电话、弹框面板、拨号交互 → `CustomerServiceSheet`
+- 环形图、饼图、简单数据占比 → `RingCharts`
+- 柱状+折线混合图、双Y轴、dataZoom → `ZbMixedChartsEmChart`（进阶，config 较大）
 
 不要把整套模板机械拼接，按业务区拆解，只复用结构和配置组织方式。
+
+### 特殊类型组件注意事项
+
+- **图表类**（`em-chart`）：`async mounted` 中 `initChart` + `getInstance`；`watch` 数据变化触发 `refresh`；动态 `resize` 适配容器
+- **弹框类**（`em-actionsheet`/`em-popup`）：管理 `show` 状态；编辑器预览模式提供触发按钮；对外暴露 `openSheet`/`closeSheet` 方法
 
 ## 组件映射优先级
 
@@ -230,6 +237,8 @@ python scripts/analyze_source.py "<zip或目录路径>" --output "<输出json>"
 | 开关 | `em-switch` |
 | 复选框 | `em-checkbox` |
 | 轮播 | `em-swipe` |
+| 弹出操作面板 | `em-actionsheet` |
+| 数据图表 | `em-chart` |
 
 若 M8 组件已能满足，不保留原始自定义结构。
 
@@ -239,138 +248,9 @@ python scripts/analyze_source.py "<zip或目录路径>" --output "<输出json>"
 
 **ZIP 转换模式下，Tailwind CSS 类必须精确转换为对应的 SCSS 样式，不允许残留任何 Tailwind 类名。**
 
-### 布局类
+详细的 Tailwind → SCSS 映射表见 `references/knowledge/standards/tailwind-to-scss.md`。
 
-| Tailwind | SCSS |
-|----------|------|
-| `flex` | `display: flex;` |
-| `flex-col` | `flex-direction: column;` |
-| `flex-row` | `flex-direction: row;` |
-| `flex-wrap` | `flex-wrap: wrap;` |
-| `flex-1` | `flex: 1;` |
-| `flex-shrink-0` | `flex-shrink: 0;` |
-| `items-center` | `align-items: center;` |
-| `items-start` | `align-items: flex-start;` |
-| `items-end` | `align-items: flex-end;` |
-| `justify-center` | `justify-content: center;` |
-| `justify-between` | `justify-content: space-between;` |
-| `justify-end` | `justify-content: flex-end;` |
-| `grid` | `display: grid;` |
-| `grid-cols-{n}` | `grid-template-columns: repeat({n}, 1fr);` |
-| `gap-{n}` | `gap: {n*4}px;` 或 `gap: {n*0.25}rem;` |
-| `hidden` | `display: none;` |
-| `block` | `display: block;` |
-| `inline-block` | `display: inline-block;` |
-
-### 间距类
-
-| Tailwind 模式 | SCSS |
-|--------------|------|
-| `p-{n}` | `padding: {n*4}px;` |
-| `px-{n}` | `padding-left: {n*4}px; padding-right: {n*4}px;` |
-| `py-{n}` | `padding-top: {n*4}px; padding-bottom: {n*4}px;` |
-| `pt-{n}` / `pr-{n}` / `pb-{n}` / `pl-{n}` | 对应方向 `padding` |
-| `m-{n}` | `margin: {n*4}px;` |
-| `mx-{n}` / `my-{n}` / `mt-{n}` 等 | 同理 |
-| `space-x-{n}` | `> * + * { margin-left: {n*4}px; }` |
-| `space-y-{n}` | `> * + * { margin-top: {n*4}px; }` |
-
-### 尺寸类
-
-| Tailwind | SCSS |
-|----------|------|
-| `w-full` | `width: 100%;` |
-| `w-{n}` | `width: {n*4}px;` |
-| `h-{n}` | `height: {n*4}px;` |
-| `min-h-screen` | `min-height: 100vh;` |
-| `max-w-{size}` | 对应 `max-width` 值 |
-| `aspect-square` | `aspect-ratio: 1 / 1;` |
-
-### 字体与文本
-
-| Tailwind | SCSS |
-|----------|------|
-| `text-xs` | `font-size: 12px;` |
-| `text-sm` | `font-size: 14px;` |
-| `text-base` | `font-size: 16px;` |
-| `text-lg` | `font-size: 18px;` |
-| `text-xl` | `font-size: 20px;` |
-| `text-2xl` | `font-size: 24px;` |
-| `text-3xl` | `font-size: 30px;` |
-| `font-normal` | `font-weight: 400;` |
-| `font-medium` | `font-weight: 500;` |
-| `font-semibold` | `font-weight: 600;` |
-| `font-bold` | `font-weight: 700;` |
-| `text-center` | `text-align: center;` |
-| `text-left` | `text-align: left;` |
-| `text-right` | `text-align: right;` |
-| `leading-{n}` | `line-height: {n*4}px;` 或 `line-height: {n};` |
-| `truncate` | `overflow: hidden; text-overflow: ellipsis; white-space: nowrap;` |
-| `line-clamp-{n}` | `display: -webkit-box; -webkit-line-clamp: {n}; -webkit-box-orient: vertical; overflow: hidden;` |
-
-### 颜色类
-
-| Tailwind 模式 | SCSS |
-|--------------|------|
-| `text-{color}-{shade}` | `color: {对应色值};` |
-| `bg-{color}-{shade}` | `background-color: {对应色值};` |
-| `border-{color}-{shade}` | `border-color: {对应色值};` |
-| `text-white` | `color: #ffffff;` |
-| `bg-white` | `background-color: #ffffff;` |
-| `text-black` | `color: #000000;` |
-| `text-gray-500` | `color: #6b7280;` |
-| `bg-blue-500` | `background-color: #3b82f6;` |
-| `opacity-{n}` | `opacity: {n/100};` |
-
-常用 Tailwind 色板参考：
-- gray: 50=#f9fafb, 100=#f3f4f6, 200=#e5e7eb, 300=#d1d5db, 400=#9ca3af, 500=#6b7280, 600=#4b5563, 700=#374151, 800=#1f2937, 900=#111827
-- blue: 50=#eff6ff, 100=#dbeafe, 200=#bfdbfe, 500=#3b82f6, 600=#2563eb, 700=#1d4ed8
-- red: 500=#ef4444, 600=#dc2626
-- green: 500=#22c55e, 600=#16a34a
-- yellow: 500=#eab308
-- orange: 500=#f97316
-
-### 边框与圆角
-
-| Tailwind | SCSS |
-|----------|------|
-| `border` | `border: 1px solid;` |
-| `border-{n}` | `border-width: {n}px;` |
-| `border-t` / `border-b` | `border-top: 1px solid;` / `border-bottom: 1px solid;` |
-| `rounded` | `border-radius: 4px;` |
-| `rounded-md` | `border-radius: 6px;` |
-| `rounded-lg` | `border-radius: 8px;` |
-| `rounded-xl` | `border-radius: 12px;` |
-| `rounded-2xl` | `border-radius: 16px;` |
-| `rounded-full` | `border-radius: 9999px;` |
-| `rounded-none` | `border-radius: 0;` |
-
-### 定位
-
-| Tailwind | SCSS |
-|----------|------|
-| `relative` | `position: relative;` |
-| `absolute` | `position: absolute;` |
-| `fixed` | `position: fixed;` |
-| `sticky` | `position: sticky;` |
-| `top-0` / `right-0` / `bottom-0` / `left-0` | 对应 `top/right/bottom/left: 0;` |
-| `inset-0` | `top: 0; right: 0; bottom: 0; left: 0;` |
-| `z-{n}` | `z-index: {n};` |
-
-### 阴影与效果
-
-| Tailwind | SCSS |
-|----------|------|
-| `shadow-sm` | `box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);` |
-| `shadow` | `box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);` |
-| `shadow-md` | `box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);` |
-| `shadow-lg` | `box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);` |
-| `overflow-hidden` | `overflow: hidden;` |
-| `overflow-y-auto` | `overflow-y: auto;` |
-| `cursor-pointer` | `cursor: pointer;` |
-| `transition` | `transition: all 0.15s ease;` |
-
-### 转换原则
+### 核心转换原则
 
 1. **精确对应** — 每个 Tailwind 类都必须找到对应的 SCSS 属性，不能丢弃
 2. **语义化类名** — 转换后的 SCSS 使用有业务含义的类名（如 `.order-item`、`.submit-btn`），不要用 `.flex-col-center`
@@ -378,6 +258,19 @@ python scripts/analyze_source.py "<zip或目录路径>" --output "<输出json>"
 4. **变量提取** — 反复出现的颜色、间距值提取为 SCSS 变量，并对应到 `config.js` 可配置项
 5. **响应式处理** — Tailwind 响应式前缀（`sm:`、`md:`、`lg:`）在小屏组件场景通常不需要，取移动端默认值即可
 6. **hover/focus 状态** — `hover:` / `focus:` 前缀转为对应的 SCSS `&:hover` / `&:focus` 嵌套
+
+### 快速参考（常用）
+
+| Tailwind | SCSS |
+|----------|------|
+| `flex` / `flex-col` | `display: flex;` / `flex-direction: column;` |
+| `items-center` / `justify-between` | `align-items: center;` / `justify-content: space-between;` |
+| `p-{n}` / `m-{n}` | `padding: {n*4}px;` / `margin: {n*4}px;` |
+| `text-sm` / `text-base` / `text-lg` | `font-size: 14px;` / `16px;` / `18px;` |
+| `font-medium` / `font-bold` | `font-weight: 500;` / `700;` |
+| `rounded-lg` / `rounded-full` | `border-radius: 8px;` / `9999px;` |
+| `shadow-md` | `box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), ...;` |
+| `truncate` | `overflow: hidden; text-overflow: ellipsis; white-space: nowrap;` |
 
 ## 资源处理规则
 

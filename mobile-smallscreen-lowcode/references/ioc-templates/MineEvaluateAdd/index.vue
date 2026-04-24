@@ -64,14 +64,6 @@
                     placeholder-style="color:#999"
                 ></textarea>
             </div>
-            <!-- <div class="picture-wrap">
-                <div class="rate-label">晒单图片（非必填）</div>
-                <em-uploader v-model="sdList" multiple accept="image/*" :max-count="8" :after-read="afterRead">
-                    <div class="em-upload em-row">
-                        <img src="./img/img_icon_add.png" alt="" />
-                    </div>
-                </em-uploader>
-            </div> -->
         </div>
         <div class="rate-content-wrap" v-else>
             <div class="content-top">
@@ -106,14 +98,6 @@
                     placeholder-style="color:#999"
                 ></textarea>
             </div>
-            <!-- <div class="picture-wrap">
-                <div class="rate-label">晒单图片（非必填）</div>
-                <em-uploader v-model="sdList" multiple accept="image/*" :max-count="8" :after-read="afterRead">
-                    <div class="em-upload em-row">
-                        <img src="./img/img_icon_add.png" alt="" />
-                    </div>
-                </em-uploader>
-            </div> -->
         </div>
         <div class="btn-wrap">
             <div class="btn" @click="submit()">提交</div>
@@ -152,35 +136,32 @@ export default {
         return {
             sbmc: '',
             sblx: '',
-            pathinfo:"",//商品展示图片
-            spzl: 0, // 商品质量
-            fwtd: 0, //服务态度
-            wlsd: 0, //物流速度
-            ztpj: '1', //总体评价
-            pjms: '', //评价描述
-            sdList: [], //晒单照片
-            rateIconUrl: '', //评分选中图标
-            rateVoidUrl: '', //评分未选中图标
+            pathinfo: '',
+            spzl: 0,
+            fwtd: 0,
+            wlsd: 0,
+            ztpj: '1',
+            pjms: '',
+            sdList: [],
+            rateIconUrl: '',
+            rateVoidUrl: '',
             indeterminate: true,
-            radioUrl: '', //总体评价未选中图标
-            radioActiveIcon: '', //总体评价选中图标
-            isAdditional: false, //是否是追加评价页面
-            ypf: '', //已评分
-            pjsj: '', //评价时间
-            zjms: '', //追加描述
-            fileList: [] //已评价照片
+            radioUrl: '',
+            radioActiveIcon: '',
+            isAdditional: false,
+            ypf: '',
+            pjsj: '',
+            zjms: '',
+            fileList: []
         };
     },
-    watch: {},
     computed: {
         // 注意：使用el.style等操作DOM的方式在微信小程序不支持
         boxOptions() {
             const { boxOptions } = this.config.options;
             const boxmodel = boxOptions.boxmodel;
-            //根据实际情况进行单位修改
             Object.keys(boxmodel).forEach((key) => {
                 if (!isNaN(Number(boxmodel[key]))) {
-                    //是纯数字才加单位
                     boxmodel[key] = boxmodel[key] + 'px';
                 }
             });
@@ -190,7 +171,6 @@ export default {
             return this.data[0];
         }
     },
-    created() {},
     mounted() {
         if (Util.getExtraDataByKey('isAdditional') == '1') {
             this.isAdditional = true;
@@ -203,50 +183,6 @@ export default {
         this.upDate();
     },
     methods: {
-        afterRead() {
-            // let pop = that.fileList.pop();
-
-            // pop.attachguid = Util.uuid();
-            this.sdList.push(file);
-
-            // ejs.ui.showWaiting('正在上传...');
-
-            // Util.upload({
-            //     url: Config.serverUrl + 'rest/frame/uploadattach_v7', //【简易案件无此接口】
-            //     data: {
-            //         clientguid: this.clientguid,
-            //         clienttag: 'DTXC-001',
-            //         attachfilename: file.name
-            //     },
-            //     files: [
-            //         {
-            //             name: file.name,
-            //             file: file
-            //         }
-            //     ],
-            //     beforeSend: function () {
-            //         // ejs.ui.toast('准备上传');
-            //     },
-            //     success: function (res) {
-            //         ejs.ui.closeWaiting();
-            //         if (typeof res == 'string') {
-            //             res = JSON.parse(res);
-            //         }
-
-            //         let pop = that.fileList.pop();
-
-            //         pop.attachguid = res.custom.attachguid;
-            //         that.fileList.push(pop);
-            //     },
-            //     error: function () {
-            //         // error callback
-            //     },
-            //     uploading: function (progressEvent) {
-            //         // progress Upload
-            //         console.log(progressEvent);
-            //     }
-            // });
-        },
         getFromData() {
             return {
                 spzl: this.spzl,
@@ -259,8 +195,6 @@ export default {
             };
         },
         submit() {
-            console.log(this.getFromData());
-            
             this.eventGenerate('onSubmit', this.getFromData());
         },
         upDate() {
@@ -282,7 +216,6 @@ export default {
             });
         }
     },
-    beforeDestroy() {},
     // 所有组件必须设置_getConfig和_getMockData，用于低码平台获取组件配置信息
     _getConfig: () => defaultConfig,
     _getMockData: () => mockData
