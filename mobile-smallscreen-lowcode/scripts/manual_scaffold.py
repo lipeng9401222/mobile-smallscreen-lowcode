@@ -76,6 +76,9 @@ export default {
 """
 
 
+PRESET_CHOICES = ("card", "form", "list", "sheet", "chart")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="生成 IOC 低码组件手工骨架")
     parser.add_argument("component_name", help="组件英文名，必须为 PascalCase")
@@ -84,6 +87,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--suffix", default="Converted", help="目录冲突时追加的后缀")
     parser.add_argument("--force", action="store_true", help="目录已存在时直接复用，不自动改名")
     parser.add_argument("--write-report", action="store_true", help="同时生成 conversion_report.md")
+    parser.add_argument(
+        "--preset",
+        choices=PRESET_CHOICES,
+        default="card",
+        help="组件骨架预设：card=列表+表单卡片(默认)，form=纯表单，list=纯列表，sheet=弹框，chart=图表",
+    )
     return parser.parse_args()
 
 
@@ -124,176 +133,380 @@ def base_js(display_name: str, component_name: str) -> str:
 """
 
 
-def config_js() -> str:
-    return """import base from './base';
-import boxOptions from '../plugin/boxoptions/config';
+EVENT_TEMPLATE = """                        {{
+                            name: '{event}',
+                            displayName: '{display}',
+                            dynamic: true,
+                            type: 'array',
+                            value: [],
+                            template: {{
+                                name: 'templete_{event}_1',
+                                displayName: '动作',
+                                type: 'text',
+                                value: 'console.log(\\"{event}事件:\\", e)'
+                            }}
+                        }}"""
 
-export default {
-    base,
-    dimension: {
-        width: '100%',
-        height: 'auto'
-    },
-    configuration: [
-        {
-            name: 'options',
-            value: [
-                boxOptions,
-                {
+
+PRESET_EVENTS: dict = {
+    "card": [
+        ("onMounted", "onMounted事件"),
+        ("onClick", "卡片整体点击"),
+        ("onItemClick", "列表条目点击"),
+        ("onSubmit", "提交按钮点击"),
+        ("onUploadChange", "附件上传变化"),
+    ],
+    "form": [
+        ("onMounted", "onMounted事件"),
+        ("onChange", "表单值变化"),
+        ("onSubmit", "提交表单"),
+        ("onReset", "重置表单"),
+        ("onUploadChange", "附件上传变化"),
+    ],
+    "list": [
+        ("onMounted", "onMounted事件"),
+        ("onItemClick", "条目点击"),
+        ("onTabChange", "Tab 切换"),
+        ("onLoadMore", "加载更多"),
+        ("onDelete", "条目删除"),
+    ],
+    "sheet": [
+        ("onMounted", "onMounted事件"),
+        ("onOpen", "打开弹框"),
+        ("onSelect", "点击内容项"),
+        ("onCancel", "点击取消"),
+        ("onClose", "关闭弹框"),
+    ],
+    "chart": [
+        ("onMounted", "onMounted事件"),
+        ("onChartReady", "图表渲染完成"),
+        ("onChartClick", "图表点击"),
+    ],
+}
+
+
+PRESET_BUSINESS_GROUPS: dict = {
+    "card": [
+        """                {
                     displayName: '内容配置',
                     name: 'contentConfig',
                     value: [
+                        { displayName: '标题', name: 'title', type: 'text', value: '组件标题' },
+                        { displayName: '显示标题', name: 'showTitle', type: 'boolean', value: true },
+                        { displayName: '说明文案', name: 'description', type: 'text', value: '请根据业务需求补充组件内容' },
+                        { displayName: '显示说明', name: 'showDescription', type: 'boolean', value: true },
+                        { displayName: '空态文案', name: 'emptyText', type: 'text', value: '暂无数据' },
+                        { displayName: '提交按钮文案', name: 'submitText', type: 'text', value: '提交' },
+                        { displayName: '显示提交按钮', name: 'showSubmit', type: 'boolean', value: true },
+                        { displayName: '封面图', name: 'coverImage', type: 'uploadimage', value: '', tip: '支持jpg、png、svg格式' }
+                    ]
+                },
+                {
+                    displayName: '样式配置',
+                    name: 'styleConfig',
+                    value: [
+                        { displayName: '主色', name: 'primaryColor', type: 'color', value: '#2196f3' },
+                        { displayName: '强调色', name: 'accentColor', type: 'color', value: '#ff5252' },
+                        { displayName: '卡片背景色', name: 'cardBgColor', type: 'color', value: '#ffffff' },
+                        { displayName: '标题颜色', name: 'titleColor', type: 'color', value: '#333333' },
+                        { displayName: '说明颜色', name: 'descriptionColor', type: 'color', value: '#999999' },
+                        { displayName: '标题字号(px)', name: 'titleFontSize', type: 'number', value: 16 },
+                        { displayName: '说明字号(px)', name: 'descriptionFontSize', type: 'number', value: 12 },
+                        { displayName: '卡片圆角(px)', name: 'cardBorderRadius', type: 'number', value: 12 },
+                        { displayName: '显示阴影', name: 'showShadow', type: 'boolean', value: false }
+                    ]
+                },
+                {
+                    displayName: '列表配置',
+                    name: 'listConfig',
+                    value: [
+                        { displayName: '展示图片', name: 'showImage', type: 'boolean', value: true },
+                        { displayName: '图片宽度(px)', name: 'imageWidth', type: 'number', value: 72 },
+                        { displayName: '图片高度(px)', name: 'imageHeight', type: 'number', value: 72 },
                         {
-                            displayName: '标题',
-                            name: 'title',
-                            type: 'text',
-                            value: '组件标题'
+                            displayName: '图片填充', name: 'imageFit', type: 'select', value: 'cover',
+                            options: [
+                                { name: '裁剪填充', value: 'cover' },
+                                { name: '完整显示', value: 'contain' },
+                                { name: '拉伸填充', value: 'fill' }
+                            ]
                         },
+                        { displayName: '展示副标题', name: 'showSubtitle', type: 'boolean', value: true },
+                        { displayName: '条目间距(px)', name: 'itemGap', type: 'number', value: 12 }
+                    ]
+                }"""
+    ],
+    "form": [
+        """                {
+                    displayName: '表单内容',
+                    name: 'contentConfig',
+                    value: [
+                        { displayName: '表单标题', name: 'title', type: 'text', value: '表单标题' },
+                        { displayName: '显示标题', name: 'showTitle', type: 'boolean', value: true },
+                        { displayName: '提交按钮文案', name: 'submitText', type: 'text', value: '提交' },
+                        { displayName: '重置按钮文案', name: 'resetText', type: 'text', value: '重置' },
+                        { displayName: '显示重置按钮', name: 'showReset', type: 'boolean', value: false }
+                    ]
+                },
+                {
+                    displayName: '字段配置',
+                    name: 'fieldsConfig',
+                    value: [
                         {
-                            displayName: '说明',
-                            name: 'description',
-                            type: 'text',
-                            value: '请根据业务需求补充组件内容'
-                        },
-                        {
-                            displayName: '按钮文案',
-                            name: 'submitText',
-                            type: 'text',
-                            value: '提交'
+                            displayName: '字段列表',
+                            name: 'fields',
+                            type: 'array',
+                            dynamic: true,
+                            value: [
+                                {
+                                    name: 'field_1',
+                                    displayName: '字段1',
+                                    value: [
+                                        { displayName: '标签', name: 'label', type: 'text', value: '名称' },
+                                        { displayName: '字段key', name: 'key', type: 'text', value: 'name' },
+                                        { displayName: '占位符', name: 'placeholder', type: 'text', value: '请输入名称' },
+                                        {
+                                            displayName: '类型', name: 'fieldType', type: 'select', value: 'text',
+                                            options: [
+                                                { name: '文本', value: 'text' },
+                                                { name: '多行文本', value: 'textarea' },
+                                                { name: '数字', value: 'number' },
+                                                { name: '开关', value: 'switch' },
+                                                { name: '上传', value: 'upload' }
+                                            ]
+                                        },
+                                        { displayName: '必填', name: 'required', type: 'boolean', value: false }
+                                    ]
+                                }
+                            ],
+                            template: {
+                                name: 'field',
+                                displayName: '字段',
+                                value: [
+                                    { displayName: '标签', name: 'label', type: 'text', value: '' },
+                                    { displayName: '字段key', name: 'key', type: 'text', value: '' },
+                                    { displayName: '占位符', name: 'placeholder', type: 'text', value: '' },
+                                    {
+                                        displayName: '类型', name: 'fieldType', type: 'select', value: 'text',
+                                        options: [
+                                            { name: '文本', value: 'text' },
+                                            { name: '多行文本', value: 'textarea' },
+                                            { name: '数字', value: 'number' },
+                                            { name: '开关', value: 'switch' },
+                                            { name: '上传', value: 'upload' }
+                                        ]
+                                    },
+                                    { displayName: '必填', name: 'required', type: 'boolean', value: false }
+                                ]
+                            }
                         }
                     ]
                 },
                 {
+                    displayName: '样式配置',
+                    name: 'styleConfig',
+                    value: [
+                        { displayName: '主色', name: 'primaryColor', type: 'color', value: '#2196f3' },
+                        { displayName: '标签颜色', name: 'labelColor', type: 'color', value: '#333333' },
+                        { displayName: '标签字号(px)', name: 'labelFontSize', type: 'number', value: 14 }
+                    ]
+                }"""
+    ],
+    "list": [
+        """                {
+                    displayName: '内容配置',
+                    name: 'contentConfig',
+                    value: [
+                        { displayName: '列表标题', name: 'title', type: 'text', value: '列表' },
+                        { displayName: '显示标题', name: 'showTitle', type: 'boolean', value: true },
+                        { displayName: '空态文案', name: 'emptyText', type: 'text', value: '暂无数据' },
+                        { displayName: '加载中文案', name: 'loadingText', type: 'text', value: '加载中...' }
+                    ]
+                },
+                {
+                    displayName: 'Tab 配置',
+                    name: 'tabConfig',
+                    value: [
+                        { displayName: '启用 Tab', name: 'enableTab', type: 'boolean', value: false },
+                        {
+                            displayName: 'Tab 列表', name: 'tabs', type: 'array', dynamic: true,
+                            value: [],
+                            template: {
+                                name: 'tab',
+                                displayName: 'Tab',
+                                value: [
+                                    { displayName: '名称', name: 'name', type: 'text', value: '' },
+                                    { displayName: '标识', name: 'key', type: 'text', value: '' }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    displayName: '样式配置',
+                    name: 'styleConfig',
+                    value: [
+                        { displayName: '条目背景色', name: 'itemBgColor', type: 'color', value: '#ffffff' },
+                        { displayName: '条目圆角(px)', name: 'itemRadius', type: 'number', value: 8 },
+                        { displayName: '条目间距(px)', name: 'itemGap', type: 'number', value: 12 },
+                        { displayName: '展示分割线', name: 'showDivider', type: 'boolean', value: true }
+                    ]
+                }"""
+    ],
+    "sheet": [
+        """                {
+                    displayName: '弹框内容',
+                    name: 'contentConfig',
+                    value: [
+                        { displayName: '标题', name: 'title', type: 'text', value: '请选择' },
+                        { displayName: '显示标题', name: 'showTitle', type: 'boolean', value: true },
+                        { displayName: '取消按钮文案', name: 'cancelText', type: 'text', value: '取消' },
+                        {
+                            displayName: '内容项列表', name: 'sheetItems', type: 'array', dynamic: true,
+                            value: [
+                                {
+                                    name: 'sheetItem_1',
+                                    displayName: '内容项1',
+                                    value: [
+                                        { displayName: '展示文案', name: 'name', type: 'text', value: '选项1' },
+                                        { displayName: '附属值', name: 'value', type: 'text', value: '1' }
+                                    ]
+                                }
+                            ],
+                            template: {
+                                name: 'sheetItem',
+                                displayName: '内容项',
+                                value: [
+                                    { displayName: '展示文案', name: 'name', type: 'text', value: '' },
+                                    { displayName: '附属值', name: 'value', type: 'text', value: '' }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    displayName: '样式配置',
+                    name: 'styleConfig',
+                    value: [
+                        { displayName: '主色', name: 'primaryColor', type: 'color', value: '#2196f3' },
+                        { displayName: '内容字号(px)', name: 'itemFontSize', type: 'number', value: 16 },
+                        { displayName: '取消文字颜色', name: 'cancelColor', type: 'color', value: '#999999' }
+                    ]
+                }"""
+    ],
+    "chart": [
+        """                {
+                    displayName: '图表配置',
+                    name: 'chartConfig',
+                    value: [
+                        { displayName: '标题', name: 'title', type: 'text', value: '图表标题' },
+                        { displayName: '显示标题', name: 'showTitle', type: 'boolean', value: true },
+                        { displayName: '图表高度(px)', name: 'chartHeight', type: 'number', value: 240 },
+                        {
+                            displayName: '图表类型', name: 'chartType', type: 'select', value: 'bar',
+                            options: [
+                                { name: '柱状图', value: 'bar' },
+                                { name: '折线图', value: 'line' },
+                                { name: '饱图', value: 'pie' },
+                                { name: '环形图', value: 'ring' }
+                            ]
+                        },
+                        { displayName: '展示图例', name: 'showLegend', type: 'boolean', value: true },
+                        { displayName: '展示数据标签', name: 'showLabel', type: 'boolean', value: false }
+                    ]
+                },
+                {
+                    displayName: '颜色配置',
+                    name: 'colorConfig',
+                    value: [
+                        {
+                            displayName: '配色方案', name: 'palette', type: 'colors',
+                            value: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de']
+                        },
+                        { displayName: '坐标轴颜色', name: 'axisColor', type: 'color', value: '#cccccc' },
+                        { displayName: '文字颜色', name: 'textColor', type: 'color', value: '#666666' }
+                    ]
+                }"""
+    ],
+}
+
+
+def _render_events(preset: str) -> str:
+    events = PRESET_EVENTS.get(preset, PRESET_EVENTS["card"])
+    return ",\n".join(EVENT_TEMPLATE.format(event=name, display=display) for name, display in events)
+
+
+def _render_business_groups(preset: str) -> str:
+    groups = PRESET_BUSINESS_GROUPS.get(preset, PRESET_BUSINESS_GROUPS["card"])
+    return ",\n".join(group for group in groups)
+
+
+POSITION_SETTING_BLOCK = """                {
                     displayName: '定位设置',
                     name: 'positionSetting',
                     tip: 'css中的定位',
                     value: [
-                        {
-                            displayName: '开启定位',
-                            name: 'isOpen',
-                            type: 'boolean',
-                            value: false
-                        },
-                        {
-                            displayName: 'left',
-                            name: 'left',
-                            type: 'text',
-                            value: '0'
-                        },
-                        {
-                            displayName: 'top',
-                            name: 'top',
-                            type: 'text',
-                            value: '0'
-                        },
-                        {
-                            displayName: 'right',
-                            name: 'right',
-                            type: 'text',
-                            value: ''
-                        },
-                        {
-                            displayName: 'bottom',
-                            name: 'bottom',
-                            type: 'text',
-                            value: ''
-                        }
+                        { displayName: '开启定位', name: 'isOpen', type: 'boolean', value: false },
+                        { displayName: 'left', name: 'left', type: 'text', value: '0' },
+                        { displayName: 'top', name: 'top', type: 'text', value: '0' },
+                        { displayName: 'right', name: 'right', type: 'text', value: '' },
+                        { displayName: 'bottom', name: 'bottom', type: 'text', value: '' }
                     ]
-                }
+                }"""
+
+
+def config_js(preset: str = "card") -> str:
+    business_groups = _render_business_groups(preset)
+    events = _render_events(preset)
+    return f"""import base from './base';
+import boxOptions from '../plugin/boxoptions/config';
+
+export default {{
+    base,
+    dimension: {{
+        width: '100%',
+        height: 'auto'
+    }},
+    configuration: [
+        {{
+            name: 'options',
+            value: [
+                boxOptions,
+{business_groups},
+{POSITION_SETTING_BLOCK}
             ]
-        },
-        {
+        }},
+        {{
             name: 'interaction',
             displayName: '交互',
             value: [
-                {
+                {{
                     name: 'callback',
                     displayName: '回调参数',
                     type: 'array',
                     dynamic: true,
                     value: [],
-                    template: {
+                    template: {{
                         name: 'callback',
                         displayName: '参数',
                         value: [
-                            {
-                                name: 'param',
-                                displayName: '变量名',
-                                type: 'text',
-                                value: ''
-                            },
-                            {
-                                name: 'field',
-                                displayName: '字段值',
-                                type: 'text',
-                                value: ''
-                            }
+                            {{ name: 'param', displayName: '变量名', type: 'text', value: '' }},
+                            {{ name: 'field', displayName: '字段值', type: 'text', value: '' }}
                         ]
-                    }
-                },
-                {
+                    }}
+                }},
+                {{
                     name: 'event',
                     displayName: '事件（新）',
                     type: 'array',
                     value: [
-                        {
-                            name: 'onMounted',
-                            displayName: 'onMounted事件',
-                            dynamic: true,
-                            type: 'array',
-                            value: [],
-                            template: {
-                                name: 'templeteMounted_1',
-                                displayName: '动作',
-                                type: 'text',
-                                value: 'console.log("onMounted事件:", e)'
-                            }
-                        },
-                        {
-                            name: 'onClick',
-                            displayName: 'onClick事件',
-                            dynamic: true,
-                            type: 'array',
-                            value: [],
-                            template: {
-                                name: 'templeteOnClick_1',
-                                displayName: '动作',
-                                type: 'text',
-                                value: 'console.log("onClick事件:", e)'
-                            }
-                        },
-                        {
-                            name: 'onSubmit',
-                            displayName: 'onSubmit事件',
-                            dynamic: true,
-                            type: 'array',
-                            value: [],
-                            template: {
-                                name: 'templeteOnSubmit_1',
-                                displayName: '动作',
-                                type: 'text',
-                                value: 'console.log("onSubmit事件:", e)'
-                            }
-                        },
-                        {
-                            name: 'onUploadChange',
-                            displayName: 'onUploadChange事件',
-                            dynamic: true,
-                            type: 'array',
-                            value: [],
-                            template: {
-                                name: 'templeteOnUploadChange_1',
-                                displayName: '动作',
-                                type: 'text',
-                                value: 'console.log("onUploadChange事件:", e)'
-                            }
-                        }
+{events}
                     ]
-                }
+                }}
             ]
-        }
+        }}
     ]
-};
+}};
 """
 
 
@@ -614,7 +827,7 @@ def main() -> int:
         directory.mkdir(parents=True, exist_ok=True)
 
     write_file(target_dir / "js" / "base.js", base_js(args.display_name, final_name))
-    write_file(target_dir / "js" / "config.js", config_js())
+    write_file(target_dir / "js" / "config.js", config_js(args.preset))
     write_file(target_dir / "mock" / "data.js", mock_js())
     write_file(target_dir / "plugin" / "boxoptions" / "config.js", BOX_OPTIONS_CONFIG)
     write_file(target_dir / "plugin" / "eventgenerate" / "index.js", EVENT_GENERATE)

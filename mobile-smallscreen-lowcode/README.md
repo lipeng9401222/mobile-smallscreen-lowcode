@@ -38,7 +38,16 @@ npx @anthropic-ai/skills add <github-repo-url> --skill mobile-smallscreen-lowcod
 - 优先在项目根目录执行 `npm run ioc create <ComponentName>` 创建组件骨架
 - 代码落盘后执行 `npm run ioc start <ComponentName>` 运行测试
 - 测试必须通过才算完成
-- 若当前目录无法执行 `ioc`，自动降级为手工骨架生成
+- 若当前目录无法执行 `ioc`，自动降级为手工骨架生成（支持 `--preset card|form|list|sheet|chart`）
+
+## 安全边界
+
+技能严格遵守以下硬约束，避免事故：
+
+- 只在 `<项目根>/src/components/card_components/<NewComponent>/` 内创建文件
+- 不会重命名 / 移动 / 删除项目里任何已有的文件或文件夹
+- 不会给目录追加 `.svg` / `.png` / `.js` 等扩展名后缀
+- SVG 图标只作为 `img/icon_*.svg` 文件存在
 
 ## 前提条件
 

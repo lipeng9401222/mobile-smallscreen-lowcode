@@ -5,192 +5,119 @@ license: MIT
 compatibility: Standalone skill package with embedded references/ and scripts/. Figma mode requires figma-mcp configured.
 metadata:
   author: juanjuan
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Mobile SmallScreen LowCode 组件生成器
 
-一个统一的小屏低代码组件生成技能，支持三种输入模式：
+统一的小屏低代码组件生成技能，支持三种输入模式：
 
 1. **ZIP 转换模式** — Google AI Studio / React+Tailwind 压缩包转 IOC 组件
 2. **Figma 设计稿模式** — 从 Figma 设计稿直接生成 IOC 组件
 3. **文字描述模式** — 根据需求文字描述直接生成 IOC 组件
 
-## 必读参考
+## ⛔ 作业边界（硬约束，必须遵守）
 
-在开始任何模式之前，至少阅读以下核心文件（后续按需深入具体条目）：
+执行任何模式前，先把以下边界写进短期记忆，**任何一条违反都属于严重事故**：
 
-- `references/ioc-docs/AI 快速开发低码组件指南.md` — 完整开发指南
+1. **只允许在新组件目录内创建/写入文件**：唯一可写区域是 `<项目根>/src/components/card_components/<ComponentName>/`（以及该组件目录内的子目录、`conversion_report.md`）。
+2. **禁止重命名、移动、删除项目里任何已有的文件或文件夹**。包括但不限于：
+   - 不要给任何已存在的文件夹追加扩展名后缀（例如 `js/` → `js.svg/`、`img/` → `img.svg/` 都是严重错误）。
+   - 不要"批量统一"现有目录的命名风格。
+   - 不要因为目录里有 svg 文件就把目录名改成 `.svg`。
+3. **SVG / 图标资源处理规则**：
+   - 内联 SVG 需要落盘时，**只能**写入新组件目录的 `img/` 子目录里，文件名形如 `icon_<语义>.svg`，且只新建文件，不新建带 `.svg` 后缀的目录。
+   - 不要扫描整个工程去把 SVG 图标搬家或重命名其所在文件夹。
+4. **scaffold 操作只通过本技能内置脚本执行**：禁止用 `mv`、`os.rename`、`shutil.move` 之类的命令对用户项目里的文件夹做任何重命名/移动；本技能没有也不需要这种行为。
+5. **目录结构的固定子目录名永远是**：`css/`、`img/`、`js/`、`mock/`、`plugin/boxoptions/`、`plugin/eventgenerate/`，全程不带任何扩展名后缀。
+6. **改完后做自检**：组件落盘后，列出新组件目录下所有一级目录名，确认没有任何 `*.svg` / `*.png` / `*.js` 之类的目录名（即目录名不应包含 `.`）。
+
+> 如果在任何时刻你"想"把一个文件夹改名加扩展名，停止——这一定是错的。直接把内容写成新组件目录里的文件即可。
+
+## 快速决策树（先看这里）
+
+进入技能后，**第一轮**只做这几件事，不要展开冗余分析：
+
+1. **判断输入模式**（按优先级）：
+   - zip 路径 / 工作区有 zip → 模式 A（ZIP 转换）
+   - Figma `fileKey + nodeId` → 模式 B（Figma）
+   - 仅文字描述 → 模式 C（文字描述）
+   - 不确定 → 直接问用户，不要猜
+2. **确认组件英文名**（PascalCase）：从用户输入 / zip 名 / Figma 节点名 / 描述提取，不确定就问
+3. **确认项目根目录**（含 `package.json` 且 `scripts.ioc` 存在）
+4. **按需读模板**：先读 `references/ioc-templates/template-index.md`，再选最多 2 个相近模板深读
+
+每一步信息齐了才往下走，**不要重复读已经看过的文件**。
+
+## 必读参考（按需读，最多 2 个模板）
+
+第一轮先只读这三份核心文档，其余按需再读：
+
 - `references/ioc-docs/第二步：小屏组件开发目录结构了解.md` — 目录结构规范
-- `references/ioc-docs/常见FAQ.md` — 常见问题解答
-- `references/knowledge/standards/_index.md` — 编码标准索引
-- `references/knowledge/standards/02-vue/component.md` — Vue 组件规范
-- `references/knowledge/m8mpdoc/UI组件库/000-组件库下载使用.md` — UI 组件库概览
 - `references/ioc-templates/template-index.md` — 模板选择指南
+- `references/knowledge/standards/_index.md` — 编码标准索引（再按里面索引去读具体子项）
 
-若需确认某个 `em-*` 组件的 API，再读取对应文档，例如：
-- `references/knowledge/m8mpdoc/UI组件库/005-button按钮.md`
-- `references/knowledge/m8mpdoc/UI组件库/013-field输入框.md`
-- `references/knowledge/m8mpdoc/UI组件库/033-stepper步进器.md`
-- `references/knowledge/m8mpdoc/UI组件库/040-uploader文件上传.md`
-- `references/knowledge/m8mpdoc/UI组件库/044-image图片.md`
+确认了模板后，再打开**最多 2 个最相近的模板**作为参考；不要把全部模板加载进上下文。
 
-## 输入模式判断
+`em-*` 组件的 API 仅在用到时才读 `references/knowledge/m8mpdoc/UI组件库/` 下的对应文档。常用入口：
 
-技能启动后，按以下优先级自动判断输入模式：
+- `005-button按钮.md`、`013-field输入框.md`、`033-stepper步进器.md`、`040-uploader文件上传.md`、`044-image图片.md`
 
-1. 用户提供了 **zip 文件路径** 或工作区存在待处理 zip → 进入 ZIP 转换模式
-2. 用户提供了 **Figma fileKey + nodeId** 或提到 Figma 设计稿 → 进入 Figma 设计稿模式
-3. 用户仅给出 **文字描述** → 进入文字描述模式
+## 通用执行流程（按顺序，不要跳步）
 
-如果判断不确定，先问用户确认输入模式，不要猜测。
+| 步骤 | 关键动作 | 失败兜底 |
+|------|---------|---------|
+| 1. 环境检测 | 项目根目录有 `package.json` 且 `scripts.ioc` 存在 | 无 ioc → 用 `manual_scaffold.py` 降级 |
+| 2. 创建骨架 | `npm run ioc create <ComponentName>` | 降级：`python scripts/manual_scaffold.py <ComponentName> --display-name "<中文名>" --target-root "<项目根>" --preset <form\|list\|sheet\|chart\|card>` |
+| 3. 填充代码 | 按输入源 + 模板，写 `index.vue` / `config.js` / `index.scss` / `mock/data.js` | — |
+| 4. 配置自检 | 对照 §4.1 推导清单逐项过，确保配置项尽量丰富 | 缺什么补什么再写盘 |
+| 5. 运行测试 | `npm run ioc start <ComponentName>` | 失败读日志 → 修代码 → 重跑，循环到通过 |
+| 6. 输出报告 | 在组件目录生成 `README.md` + 项目根 `conversion_report.md` | — |
 
-## 通用执行流程
-
-无论哪种输入模式，最终都要经历以下步骤：
-
-### 1. 环境检测
-
-检查当前项目根目录是否可执行 IOC 命令：
-- 存在 `package.json`
-- `package.json.scripts` 中存在 `ioc` 脚本
-
-### 2. 创建组件骨架
-
-**如果环境可用（推荐）：**
-
-```bash
-npm run ioc create <ComponentName>
-```
-
-在项目根目录执行。`<ComponentName>` 必须遵循 PascalCase 命名规范。
-
-**如果环境不可用：**
-
-使用 `scripts/manual_scaffold.py` 手工生成骨架：
-
-```bash
-python scripts/manual_scaffold.py <ComponentName> --display-name "<中文名>" --target-root "<项目根目录>"
-```
-
-### 3. 填充组件代码
-
-根据输入源（zip 分析结果 / Figma 设计数据 / 文字需求）填充组件各文件。
-
-### 4. 运行与测试
-
-组件代码落盘后，在项目根目录执行：
-
-```bash
-npm run ioc start <ComponentName>
-```
-
-**必须等待自动化测试通过**。如果测试失败：
-- 分析错误日志，修复代码
-- 重新执行 `npm run ioc start <ComponentName>`
-- 循环直到测试通过
-
-### 5. 输出报告
-
-生成 `conversion_report.md`，包含：
-1. 输入源类型与详情
-2. 最终组件名与输出目录
-3. 使用的模板参考
-4. 跳过的区域
-5. 组件映射清单
-6. `ioc create` / `ioc start` 执行情况
-7. 测试通过状态
-8. 待人工确认点
+`conversion_report.md` 至少包含：输入源类型、组件名与输出目录、使用的模板、跳过的区域、组件映射清单、`ioc create` / `ioc start` 执行情况、测试状态、待人工确认点。
 
 ---
 
-## 模式 A：ZIP 转换模式
+## 模式 A：ZIP 转换
 
-适用于 Google AI Studio 导出的 React + Tailwind 压缩包，或任意 React 项目目录。
+适用：Google AI Studio 导出的 React + Tailwind 压缩包，或任意 React 项目目录。
 
-### 步骤
+1. **分析源码**：
 
-1. **分析源码** — 运行分析脚本：
+   ```bash
+   python scripts/analyze_source.py "<zip或目录路径>" --output "<输出json>"
+   ```
 
-```bash
-python scripts/analyze_source.py "<zip或目录路径>" --output "<输出json>"
-```
+   产出：入口文件、依赖、Tailwind 类名、lucide 图标、内联 SVG、图片资源、可跳过区域、推荐模板。
 
-脚本会输出入口文件、依赖关系、Tailwind 类名、lucide 图标、内联 SVG、图片资源、可跳过区域、推荐模板。
-
-2. **确定组件名** — 优先级：
-   - 用户明确指定的英文名
-   - 压缩包 / 目录名
-   - 源码中的页面标题 / `metadata.json.name`
-   - 回退：`GeneratedIocComponent`
+2. **组件名优先级**：用户指定 → 压缩包/目录名 → 源码标题/`metadata.json.name` → `GeneratedIocComponent`。
 
 3. **源码分析规则**：
-   - 入口探测顺序：`src/App.tsx` → `src/App.jsx` → `src/main.tsx` → `src/main.jsx` → 首个包含 JSX 的文件
+   - 入口探测：`src/App.tsx` → `src/App.jsx` → `src/main.tsx` → `src/main.jsx` → 首个含 JSX 的文件
    - 只追踪本地相对 import，深度最多 2 层
-   - 重点识别：表单区、上传区、列表区、数量调整区、提交按钮、Tailwind 类名、lucide 图标、内联 SVG、远程图片
+   - 重点识别：表单区 / 上传区 / 列表区 / 数量调整区 / 提交按钮 / Tailwind 类名 / lucide 图标 / 内联 SVG / 远程图片
 
-4. **固定跳过区域**（除非用户明确要求保留）：
-   - 顶部状态栏
-   - 顶部导航栏
-   - 底部 home indicator
+4. **固定跳过**（除非用户要求保留）：顶部状态栏、顶部导航栏、底部 home indicator。
 
-5. **代码转换** — 将 React + Tailwind 代码转换为 Vue2 + SCSS 的 IOC 组件代码
+5. **代码转换**：React + Tailwind → Vue2 + SCSS。Tailwind 不允许残留任何类名（详见下文 SCSS 转换规则）。
 
----
+## 模式 B：Figma 设计稿
 
-## 模式 B：Figma 设计稿模式
+适用：用户提供 `{ fileKey, nodeId }`，依赖 figma-mcp。
 
-适用于用户提供 Figma 设计稿数据（fileKey + nodeId）的场景。依赖 figma-mcp。
+1. 通过 figma-mcp 获取节点树、样式、布局
+2. 提取设计 token：颜色、字体、间距、圆角；识别可交互元素（按钮、输入框、开关、上传等）
+3. 用 `scripts/figma_parser.py <figma_data.json> --output <output.json>` 解析（可选辅助）
+4. 映射到 `em-*` 组件（见下文映射表）
+5. 图片资源下载到新组件目录的 `img/`
 
-### 前置条件
+## 模式 C：文字描述
 
-用户需提前配置好 figma-mcp。输入格式：
+适用：仅有业务需求描述。
 
-```json
-{
-  "fileKey": "9nEUPUYtLMIcUauoIpVWku",
-  "nodeId": "1-2706"
-}
-```
-
-### 步骤
-
-1. **获取设计数据** — 通过 figma-mcp 获取设计稿节点信息：
-   - 调用 figma MCP 获取节点树、样式、布局信息
-   - 解析颜色、字体、间距、圆角等设计 token
-   - 识别组件层级结构和交互区域
-
-2. **设计分析** — 从 Figma 数据中提取：
-   - 页面布局结构（Flex/Grid）
-   - 颜色系统（背景色、文字色、边框色）
-   - 字体规格（大小、粗细、行高）
-   - 间距系统（padding、margin、gap）
-   - 图标和图片资源
-   - 交互元素（按钮、输入框、开关等）
-
-3. **映射到 M8 组件** — 将 Figma 设计元素映射为 em-* 组件
-
-4. **生成组件代码** — 按 IOC 规范生成完整组件目录
-
-5. **资源处理** — Figma 中的图片资源下载到组件 `img/` 目录
-
----
-
-## 模式 C：文字描述模式
-
-适用于用户只给出需求描述，没有源码或设计稿的场景。
-
-### 步骤
-
-1. **需求分析** — 解析用户描述，提取：
-   - 页面类型（表单、列表、详情、卡片等）
-   - 包含的 UI 元素（输入框、按钮、图片、上传等）
-   - 业务逻辑（提交、计算、联动等）
-   - 样式偏好（圆角、配色等）
-
-2. **模板匹配** — 读取 `references/ioc-templates/template-index.md`，选择最接近的 1-2 个模板
-
-3. **直接生成** — 按需求和模板参考，直接生成完整 IOC 组件
+1. 解析描述：页面类型 / UI 元素 / 业务逻辑 / 样式偏好
+2. 读 `references/ioc-templates/template-index.md`，选最相近的 1-2 个模板
+3. 按模板结构生成完整组件代码 + 配置项（重点对照 §4.1 推导清单）
 
 ---
 
@@ -318,31 +245,98 @@ src/components/card_components/<ComponentName>/
 - `_getMockData: () => mockData`
 - `mounted()` 中必须触发 `this.eventGenerate('onMounted', ...)`
 
-### 4. 配置
+### 4. 配置（重要 — 必须尽可能完善暴露给低码平台的可配置项）
 
 `config.js` 必须包含：
-- `boxOptions`
-- 至少一组业务配置
-- `interaction.event`
+- `boxOptions`（通用容器样式，必有）
+- 至少一组**业务配置**（`contentConfig` / `styleConfig` / `listConfig` 等）
+- `interaction.callback` 与 `interaction.event`
 
-事件按业务需要补充，例如：`onClick`、`onSubmit`、`onQuantityChange`、`onUploadChange`
+**核心原则：每一个用户在页面/设计稿/描述里能"看到"或"操作"的元素，都应该在 `config.js` 里有对应的可配置项。**不要只丢一个 `title` 就交差。
+
+#### 4.1 配置项推导清单（按页面元素逐项排查）
+
+落盘 `config.js` 之前，按以下表格自上而下逐项检查页面有没有这些元素，**有就必须暴露**：
+
+| 页面元素 / 业务区 | 必须暴露的配置项 |
+|------|------|
+| 文字（标题、描述、按钮文案、占位符、空态文案、单位等） | 每条文字 → `text` 配置项 |
+| 颜色（主色、强调色、文字色、背景色、边框色、按钮色） | 每种颜色 → `color` 配置项；批量同语义颜色用 `colors` 面板 |
+| 字号 / 字重 | `number` 或 `select` 配置项 |
+| 间距 / 圆角（非通用容器范围） | `number` / `text` |
+| 显示/隐藏开关（如「显示价格」「显示销量」「显示评分」「展示分组头」） | `boolean` |
+| 单选/枚举（布局方向、对齐方式、尺寸 sm/md/lg、tab 默认页） | `radio` 或 `select` + `options` |
+| 数值范围（最大数量、最少字符、滑动间隔） | `number` 或 `range` |
+| 图片资源（封面、占位图、空态图、Logo） | `uploadimage` |
+| 视频 / 文件 | `uploadvideo` / `uploadfile` |
+| 列表 / 菜单 / tab 项（条目可增删） | `array` + `template` + `dynamic: true` |
+| 跳转/绑定的页面或组件 | `pageselect` / `componentselect` |
+| 表单模型（如复用 M8 表单） | `formmodelselect` |
+| 区域 / 行政区 | `area` |
+| 自定义脚本扩展点 | `code` |
+
+#### 4.2 命名与组织约定
+
+- 顶层业务分组使用语义名：`contentConfig`、`styleConfig`、`listConfig`、`buttonConfig`、`emptyConfig` 等。
+- 每个配置项必须有 `displayName`（中文，简洁）、`name`（英文 camelCase）、`type`、`value`（合理的默认值）。
+- 颜色默认值用十六进制（`#333333`、`#ffffff`）。
+- 文本默认值取自页面真实文案（来自 zip 源码 / Figma 文本节点 / 用户描述），避免 `请输入` 这种通用占位。
+- 默认布尔值与页面初始状态保持一致（页面初始隐藏 → `false`，初始展示 → `true`）。
+- 数组项的 `template` 必须与 `value` 中条目结构完全对齐，且每条条目都要有唯一的 `name`（例如 `phoneItem_1`、`phoneItem_2`）。
+
+#### 4.3 事件（interaction.event）
+
+事件至少包含 `onMounted`，其余按业务暴露**所有用户可触发的交互**。常见事件：
+
+- `onClick` — 卡片/列表项整体点击
+- `onSubmit` — 表单提交
+- `onCancel` / `onClose` — 取消 / 关闭弹框
+- `onChange` — 值变化（输入框、单选、开关等）
+- `onTabChange` — Tab 切换
+- `onUploadChange` — 上传成功/删除
+- `onQuantityChange` / `onNumChange` — 数量加减
+- `onDelete` — 列表项删除
+- `onSwipeChange` — 轮播切换
+- `onSelect` — 选中条目（弹框、菜单）
+- `onCall` — 拨号
+- `onItemClick` — 子条目点击（与卡片整体 `onClick` 区分时使用）
+
+每个事件必须按 IOC 标准模板写：
+
+```js
+{
+    name: 'onClick',
+    displayName: 'onClick事件',
+    dynamic: true,
+    type: 'array',
+    value: [],
+    template: {
+        name: 'templeteOnClick_1',
+        displayName: '动作',
+        type: 'text',
+        value: 'console.log("onClick事件:", e)'
+    }
+}
+```
+
+并且在 `index.vue` 对应交互处真的调用 `this.eventGenerate('<eventName>', payload)`，**配置中声明了的事件，模板里必须有调用点**。
 
 ### 5. 配置项类型
 
-config.js 中配置项的 type 可选值：
+config.js 中配置项的 `type` 可选值：
 
 | type | 说明 |
 |------|------|
-| `colors` | 颜色面板 |
-| `array` | 数组类型（动态列表） |
-| `tab` | 标签页类型 |
 | `text` | 文本输入框 |
 | `number` | 数字输入框 |
 | `boolean` | 布尔开关 |
 | `radio` | 单选按钮 |
-| `select` | 下拉选择框 |
+| `select` | 下拉选择框（需 `options`） |
 | `color` | 颜色选择器 |
+| `colors` | 颜色面板（多色批量） |
 | `range` | 滑块组件 |
+| `array` | 数组类型（动态列表，需 `template`） |
+| `tab` | 标签页类型 |
 | `uploadimage` | 图片上传 |
 | `uploadvideo` | 视频上传 |
 | `uploadfile` | 文件上传 |
@@ -359,48 +353,35 @@ config.js 中配置项的 type 可选值：
 
 ## 生成后检查清单
 
-完成后至少自检：
+完成后至少自检（每项都要在心里过一遍，确认通过再交付）：
 
-- [ ] `base.module_name === 文件夹名`
+**结构与命名**
+- [ ] `base.module_name === 文件夹名`，PascalCase
+- [ ] 新组件目录下的所有子目录名为 `css` / `img` / `js` / `mock` / `plugin`，**没有任何带 `.` 的目录名**
+- [ ] 没有重命名 / 移动 / 删除新组件目录之外的任何文件或文件夹
+
+**代码与生命周期**
 - [ ] `index.vue` 含 `_getConfig` 和 `_getMockData`
 - [ ] `mounted()` 已触发 `onMounted`
-- [ ] `config.js` 已包含 `boxOptions`
 - [ ] 样式已转换为 SCSS，无 Tailwind/CSS-in-JS 残留
 - [ ] 未重构顶部状态栏、顶部导航栏、底部黑线（除非用户要求）
+
+**配置项完备度**（重点）
+- [ ] `config.js` 已包含 `boxOptions`
+- [ ] 已对照 §4.1 配置项推导清单逐项过一遍，页面上所有可见文案都暴露成 `text`
+- [ ] 页面所有可见颜色都暴露成 `color` / `colors`
+- [ ] 页面所有可隐藏 / 可切换的区域都暴露成 `boolean` / `select`
+- [ ] 列表 / Tab / 菜单类数据都暴露成 `array` + `template`，并且 `template` 与现有 `value` 结构一致
+- [ ] 所有图片（封面、占位、空态）都暴露成 `uploadimage`
+- [ ] `interaction.event` 内每个声明的事件，在 `index.vue` 都有对应 `eventGenerate` 调用
+
+**运行与产物**
 - [ ] 已执行 `npm run ioc start <ComponentName>` 且测试通过
 - [ ] 组件目录下已生成 `README.md`（包含组件简介、配置项说明、事件说明、使用示例）
+- [ ] 已生成 `conversion_report.md`
 
-## 示例场景
+## 示例场景（一句话提示）
 
-### 示例 1：ZIP 转换
-
-> 用户：把 `worlddemo.zip` 转成 IOC 低码组件
-
-执行流程：
-1. 运行 `scripts/analyze_source.py` 分析 zip
-2. 识别并跳过导航栏、状态栏、home indicator
-3. 以最匹配的模板为结构参考
-4. 优先使用 `em-*` 组件
-5. 输出到 `src/components/card_components/<ComponentName>/`
-6. 执行 `npm run ioc start` 确保测试通过
-
-### 示例 2：Figma 设计稿
-
-> 用户：根据 Figma 设计稿生成组件，fileKey: 9nEUPUYtLMIcUauoIpVWku, nodeId: 1-2706
-
-执行流程：
-1. 通过 figma-mcp 获取设计数据
-2. 分析布局、样式、交互元素
-3. 映射为 M8 em-* 组件
-4. 生成完整 IOC 组件目录
-5. 执行测试确保通过
-
-### 示例 3：文字描述
-
-> 用户：帮我生成一个"售后申请"低码组件，包含退款说明、上传凭证、联系电话、商品退款数量和提交按钮
-
-执行流程：
-1. 分析需求，匹配 `MineEvaluateAdd` 模板
-2. 直接生成组件，使用 `em-field`、`em-uploader`、`em-button`、`em-stepper`
-3. 按 IOC 规范落盘所有文件
-4. 执行测试确保通过
+- **ZIP**：`把 worlddemo.zip 转成 IOC 低码组件` → 模式 A，组件名取自 zip / 用户指定
+- **Figma**：`根据 Figma 生成组件，fileKey: xxx, nodeId: xxx` → 模式 B，下载图片到 `img/`
+- **文字描述**：`生成一个"售后申请"低码组件，包含退款说明、上传凭证、电话、退款数量、提交按钮` → 模式 C，参考 `ShoppingCart` 模板，使用 `em-field` / `em-uploader` / `em-button` / `em-stepper`，配置项尽量丰富
