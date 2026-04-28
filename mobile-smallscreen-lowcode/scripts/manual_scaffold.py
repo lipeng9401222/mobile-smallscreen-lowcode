@@ -188,37 +188,42 @@ PRESET_EVENTS: dict = {
 PRESET_BUSINESS_GROUPS: dict = {
     "card": [
         """                {
-                    displayName: '内容配置',
-                    name: 'contentConfig',
+                    displayName: '全局样式',
+                    name: 'globalStyleConfig',
                     value: [
-                        { displayName: '标题', name: 'title', type: 'text', value: '组件标题' },
-                        { displayName: '显示标题', name: 'showTitle', type: 'boolean', value: true },
-                        { displayName: '说明文案', name: 'description', type: 'text', value: '请根据业务需求补充组件内容' },
-                        { displayName: '显示说明', name: 'showDescription', type: 'boolean', value: true },
-                        { displayName: '空态文案', name: 'emptyText', type: 'text', value: '暂无数据' },
-                        { displayName: '提交按钮文案', name: 'submitText', type: 'text', value: '提交' },
-                        { displayName: '显示提交按钮', name: 'showSubmit', type: 'boolean', value: true },
-                        { displayName: '封面图', name: 'coverImage', type: 'uploadimage', value: '', tip: '支持jpg、png、svg格式' }
-                    ]
-                },
-                {
-                    displayName: '样式配置',
-                    name: 'styleConfig',
-                    value: [
+                        { displayName: '页面背景色', name: 'pageBgColor', type: 'color', value: '#f5f5f5' },
+                        { displayName: '卡片背景色', name: 'cardBgColor', type: 'color', value: '#ffffff' },
                         { displayName: '主色', name: 'primaryColor', type: 'color', value: '#2196f3' },
                         { displayName: '强调色', name: 'accentColor', type: 'color', value: '#ff5252' },
-                        { displayName: '卡片背景色', name: 'cardBgColor', type: 'color', value: '#ffffff' },
-                        { displayName: '标题颜色', name: 'titleColor', type: 'color', value: '#333333' },
-                        { displayName: '说明颜色', name: 'descriptionColor', type: 'color', value: '#999999' },
-                        { displayName: '标题字号(px)', name: 'titleFontSize', type: 'number', value: 16 },
-                        { displayName: '说明字号(px)', name: 'descriptionFontSize', type: 'number', value: 12 },
                         { displayName: '卡片圆角(px)', name: 'cardBorderRadius', type: 'number', value: 12 },
+                        { displayName: '卡片间距(px)', name: 'cardGap', type: 'number', value: 12 },
+                        { displayName: '卡片内边距(px)', name: 'cardPadding', type: 'number', value: 16 },
                         { displayName: '显示阴影', name: 'showShadow', type: 'boolean', value: false }
                     ]
                 },
                 {
-                    displayName: '列表配置',
-                    name: 'listConfig',
+                    displayName: '标题',
+                    name: 'titleConfig',
+                    value: [
+                        { displayName: '标题文案', name: 'title', type: 'text', value: '组件标题' },
+                        { displayName: '显示标题', name: 'showTitle', type: 'boolean', value: true },
+                        { displayName: '标题颜色', name: 'titleColor', type: 'color', value: '#333333' },
+                        { displayName: '标题字号(px)', name: 'titleFontSize', type: 'number', value: 16 }
+                    ]
+                },
+                {
+                    displayName: '说明',
+                    name: 'descriptionConfig',
+                    value: [
+                        { displayName: '说明文案', name: 'description', type: 'text', value: '请根据业务需求补充组件内容' },
+                        { displayName: '显示说明', name: 'showDescription', type: 'boolean', value: true },
+                        { displayName: '说明颜色', name: 'descriptionColor', type: 'color', value: '#999999' },
+                        { displayName: '说明字号(px)', name: 'descriptionFontSize', type: 'number', value: 12 }
+                    ]
+                },
+                {
+                    displayName: '列表图片',
+                    name: 'listImageConfig',
                     value: [
                         { displayName: '展示图片', name: 'showImage', type: 'boolean', value: true },
                         { displayName: '图片宽度(px)', name: 'imageWidth', type: 'number', value: 72 },
@@ -231,8 +236,30 @@ PRESET_BUSINESS_GROUPS: dict = {
                                 { name: '拉伸填充', value: 'fill' }
                             ]
                         },
+                        { displayName: '封面图', name: 'coverImage', type: 'uploadimage', value: '', tip: '支持jpg、png、svg格式' }
+                    ]
+                },
+                {
+                    displayName: '列表条目',
+                    name: 'listItemConfig',
+                    value: [
                         { displayName: '展示副标题', name: 'showSubtitle', type: 'boolean', value: true },
                         { displayName: '条目间距(px)', name: 'itemGap', type: 'number', value: 12 }
+                    ]
+                },
+                {
+                    displayName: '提交按钮',
+                    name: 'submitConfig',
+                    value: [
+                        { displayName: '按钮文案', name: 'submitText', type: 'text', value: '提交' },
+                        { displayName: '显示提交按钮', name: 'showSubmit', type: 'boolean', value: true }
+                    ]
+                },
+                {
+                    displayName: '空态与通用',
+                    name: 'emptyConfig',
+                    value: [
+                        { displayName: '空态文案', name: 'emptyText', type: 'text', value: '暂无数据' }
                     ]
                 }"""
     ],
@@ -529,27 +556,29 @@ def index_vue(component_name: str) -> str:
     block = component_name.lower()
     return f"""<template>
     <div class="epoint-component" :style="[boxOptions, boxOptions.boxmodel, positionSetting]">
-        <div class="{block}__header">
-            <div class="{block}__title">{{{{ contentConfig.title || baseInfo.name }}}}</div>
-            <div class="{block}__description">{{{{ contentConfig.description }}}}</div>
+        <div class="{block}__header" v-if="titleConfig.showTitle">
+            <div class="{block}__title" :style="{{ color: titleConfig.titleColor, fontSize: titleConfig.titleFontSize + 'px' }}">{{{{ titleConfig.title || baseInfo.name }}}}</div>
+            <div class="{block}__description" v-if="descriptionConfig.showDescription" :style="{{ color: descriptionConfig.descriptionColor, fontSize: descriptionConfig.descriptionFontSize + 'px' }}">{{{{ descriptionConfig.description }}}}</div>
         </div>
-        <div class="{block}__list">
+        <div class="{block}__list" :style="{{ background: globalStyleConfig.cardBgColor, borderRadius: globalStyleConfig.cardBorderRadius + 'px', padding: globalStyleConfig.cardPadding + 'px' }}">
             <div
                 v-for="(item, index) in myData"
                 :key="item.id || index"
                 class="{block}__item"
+                :style="{{ marginBottom: listItemConfig.itemGap + 'px' }}"
                 @click="handleClick(item, index)"
             >
                 <em-image
+                    v-if="listImageConfig.showImage"
                     class="{block}__item-image"
-                    width="72"
-                    height="72"
-                    fit="cover"
-                    :src="item.image"
+                    :width="listImageConfig.imageWidth || 72"
+                    :height="listImageConfig.imageHeight || 72"
+                    :fit="listImageConfig.imageFit || 'cover'"
+                    :src="item.image || coverImageUrl"
                 />
                 <div class="{block}__item-content">
                     <div class="{block}__item-title">{{{{ item.title }}}}</div>
-                    <div class="{block}__item-subtitle">{{{{ item.subtitle }}}}</div>
+                    <div class="{block}__item-subtitle" v-if="listItemConfig.showSubtitle">{{{{ item.subtitle }}}}</div>
                 </div>
             </div>
         </div>
@@ -564,8 +593,8 @@ def index_vue(component_name: str) -> str:
                 <em-uploader v-model="fileList" :after-read="afterRead" />
             </div>
         </div>
-        <em-button type="danger" block round @click="handleSubmit">
-            {{{{ contentConfig.submitText || '提交' }}}}
+        <em-button v-if="submitConfig.showSubmit" type="danger" block round @click="handleSubmit">
+            {{{{ submitConfig.submitText || '提交' }}}}
         </em-button>
     </div>
 </template>
@@ -633,9 +662,6 @@ export default {{
 
             return options;
         }},
-        contentConfig() {{
-            return (this.config && this.config.options && this.config.options.contentConfig) || {{}};
-        }},
         positionSetting() {{
             const setting = (this.config && this.config.options && this.config.options.positionSetting) || {{}};
 
@@ -646,6 +672,49 @@ export default {{
             }}
 
             return setting;
+        }},
+        // ---------- 按视觉元素分组的配置 ----------
+        globalStyleConfig() {{
+            return (this.config && this.config.options && this.config.options.globalStyleConfig) || {{}};
+        }},
+        titleConfig() {{
+            return (this.config && this.config.options && this.config.options.titleConfig) || {{}};
+        }},
+        descriptionConfig() {{
+            return (this.config && this.config.options && this.config.options.descriptionConfig) || {{}};
+        }},
+        listImageConfig() {{
+            return (this.config && this.config.options && this.config.options.listImageConfig) || {{}};
+        }},
+        listItemConfig() {{
+            return (this.config && this.config.options && this.config.options.listItemConfig) || {{}};
+        }},
+        submitConfig() {{
+            return (this.config && this.config.options && this.config.options.submitConfig) || {{}};
+        }},
+        emptyConfig() {{
+            return (this.config && this.config.options && this.config.options.emptyConfig) || {{}};
+        }},
+        // ---------- uploadimage 路径处理 ----------
+        prefix() {{
+            const origin = location.origin;
+            let path = location.pathname;
+            if (path.indexOf('/') === 0) {{
+                path = path.substring(1);
+            }}
+            const basePath = '/' + path.split('/')[0];
+            if (!this.isTest()) {{
+                return origin + basePath + '/';
+            }} else {{
+                return 'http://218.4.136.120:8990/smallscreen-demo/';
+            }}
+        }},
+        coverImageUrl() {{
+            const cover = this.listImageConfig.coverImage;
+            if (cover) {{
+                return this.prefix + cover;
+            }}
+            return '';
         }}
     }},
     mounted() {{
@@ -654,6 +723,20 @@ export default {{
         }});
     }},
     methods: {{
+        isTest() {{
+            let href = location.href;
+            if (href.includes('smallscreen-demo') && href.includes('218.4.136.120:8990')) {{
+                return false;
+            }}
+            if (
+                href.includes('smallscreen-demo') ||
+                href.startsWith('http://localhost') ||
+                href.startsWith('http://192.168')
+            ) {{
+                return true;
+            }}
+            return false;
+        }},
         handleClick(item, index) {{
             this.eventGenerate('onClick', {{
                 item,

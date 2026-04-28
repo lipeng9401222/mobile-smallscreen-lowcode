@@ -277,12 +277,88 @@ src/components/card_components/<ComponentName>/
 
 #### 4.2 命名与组织约定
 
-- 顶层业务分组使用语义名：`contentConfig`、`styleConfig`、`listConfig`、`buttonConfig`、`emptyConfig` 等。
 - 每个配置项必须有 `displayName`（中文，简洁）、`name`（英文 camelCase）、`type`、`value`（合理的默认值）。
 - 颜色默认值用十六进制（`#333333`、`#ffffff`）。
 - 文本默认值取自页面真实文案（来自 zip 源码 / Figma 文本节点 / 用户描述），避免 `请输入` 这种通用占位。
 - 默认布尔值与页面初始状态保持一致（页面初始隐藏 → `false`，初始展示 → `true`）。
 - 数组项的 `template` 必须与 `value` 中条目结构完全对齐，且每条条目都要有唯一的 `name`（例如 `phoneItem_1`、`phoneItem_2`）。
+
+##### 分组策略：按视觉元素归拢
+
+配置项分组优先按**视觉元素**组织，而非按类型（内容/样式）拆分。核心原则：**同一个视觉元素的文案、开关、颜色、字号等放在同一个配置组内**，让用户配置某个元素时不需要在多个面板间来回切换。
+
+**分组决策规则：**
+
+- **简单组件（≤6 个独立可配元素）**：可保留传统 `contentConfig` + `styleConfig` 二分法
+- **复杂组件（>6 个独立可配元素，或同一元素有 ≥3 个可配属性）**：**必须按视觉元素分组**
+
+**按元素分组约定：**
+
+| 分组 | `name` 命名 | `displayName` | 包含内容 |
+|------|-------------|---------------|---------|
+| 全局/卡片级样式 | `globalStyleConfig` | `全局样式` | 页面/卡片背景色、圆角、间距、阴影等不属于某个具体元素的通用样式 |
+| 每个可见视觉元素 | `xxxConfig`（如 `applyTimeConfig`、`returnQuantityConfig`） | 用元素中文名（如 `申请时间`、`退货数量`） | 该元素的文案/前缀（text）、显示开关（boolean）、文字颜色（color）、字号（number）等 |
+| 空态 / 通用文案 | `emptyConfig` 或 `commonConfig` | `空态与通用` | 空态文案、兜底提示等 |
+| 图片资源 | 归属到对应元素组，或独立 `imageConfig` | 按语义 | `uploadimage` 类型配置项 |
+| 列表 / 动态项 | `listConfig` 或归属到对应元素组 | 按语义 | `array` + `template` |
+
+**示例（退货退款列表卡片）：**
+
+```js
+// ✅ 按视觉元素分组 — 推荐
+{
+    displayName: '全局样式',
+    name: 'globalStyleConfig',
+    value: [
+        { displayName: '页面背景色', name: 'pageBgColor', type: 'color', value: '#F5F6F8' },
+        { displayName: '卡片背景色', name: 'cardBgColor', type: 'color', value: '#ffffff' },
+        { displayName: '卡片圆角(px)', name: 'cardBorderRadius', type: 'number', value: 12 },
+        { displayName: '显示卡片阴影', name: 'showCardShadow', type: 'boolean', value: true },
+    ]
+},
+{
+    displayName: '申请时间',
+    name: 'applyTimeConfig',
+    value: [
+        { displayName: '时间前缀', name: 'timePrefix', type: 'text', value: '申请时间：' },
+        { displayName: '显示申请时间', name: 'showApplyTime', type: 'boolean', value: true },
+        { displayName: '时间文字颜色', name: 'timeColor', type: 'color', value: '#6b7280' },
+        { displayName: '时间字号(px)', name: 'timeFontSize', type: 'number', value: 13 },
+    ]
+},
+{
+    displayName: '退货数量',
+    name: 'returnQuantityConfig',
+    value: [
+        { displayName: '数量前缀', name: 'quantityPrefix', type: 'text', value: '退货数量：' },
+        { displayName: '显示退货数量', name: 'showQuantity', type: 'boolean', value: true },
+        { displayName: '数量文字颜色', name: 'quantityColor', type: 'color', value: '#6b7280' },
+        { displayName: '数量字号(px)', name: 'quantityFontSize', type: 'number', value: 12 },
+    ]
+},
+// ... 退款金额、商品信息、取消按钮等各自一组
+
+// ❌ 传统按类型拆分 — 元素多时不推荐
+// contentConfig: [时间前缀, 数量前缀, 金额前缀, 显示时间, 显示数量, ...]
+// styleConfig: [时间颜色, 数量颜色, 金额颜色, 时间字号, 数量字号, ...]
+```
+
+**`index.vue` 中对应的 computed 也按元素组织：**
+
+```js
+computed: {
+    globalStyleConfig() {
+        return (this.config && this.config.options && this.config.options.globalStyleConfig) || {};
+    },
+    applyTimeConfig() {
+        return (this.config && this.config.options && this.config.options.applyTimeConfig) || {};
+    },
+    returnQuantityConfig() {
+        return (this.config && this.config.options && this.config.options.returnQuantityConfig) || {};
+    },
+    // ...
+}
+```
 
 #### 4.3 事件（interaction.event）
 
@@ -347,6 +423,88 @@ config.js 中配置项的 `type` 可选值：
 | `boxmodel` | 盒子模型控件 |
 | `formmodelselect` | 表单模型选择器 |
 
+### 5.1 `uploadimage` 图片路径处理规范
+
+低码平台通过 `uploadimage` 控件上传的图片，存储的是**相对路径**。组件在运行时必须拼接正确的 `prefix` 前缀才能正确显示图片。
+
+**`index.vue` 必须包含以下 computed 和 methods：**
+
+```js
+computed: {
+    prefix() {
+        const origin = location.origin;
+        let path = location.pathname;
+        if (path.indexOf('/') === 0) {
+            path = path.substring(1);
+        }
+        const basePath = '/' + path.split('/')[0];
+        if (!this.isTest()) {
+            // 正式地址
+            return origin + basePath + '/';
+        } else {
+            // 测试地址
+            return 'http://218.4.136.120:8990/smallscreen-demo/';
+        }
+    },
+},
+methods: {
+    isTest() {
+        let href = location.href;
+        if (href.includes('smallscreen-demo') && href.includes('218.4.136.120:8990')) {
+            return false; // 走正式地址 — 开发环境的外网映射
+        }
+        if (
+            href.includes('smallscreen-demo') ||
+            href.startsWith('http://localhost') ||
+            href.startsWith('http://192.168')
+        ) {
+            return true; // 走测试地址
+        }
+        return false;
+    },
+}
+```
+
+**消费 `uploadimage` 配置值时的正确写法：**
+
+```js
+// ✅ 正确 — 拼接 prefix
+computed: {
+    tokenIconUrl() {
+        const icon = this.xxxConfig.tokenIcon; // xxxConfig 为该元素对应的配置组
+        if (icon) {
+            return this.prefix + icon;
+        }
+        return require('./img/icon_token.svg'); // 仅作本地 fallback 默认值
+    },
+    // imageSetting 模式（当 uploadimage 在一个子配置组中时）
+    imageSetting() {
+        let { imageSetting } = this.config.options;
+        let imgUrl = this.prefix + imageSetting.bgurl;
+        return {
+            ...imageSetting,
+            imgUrl
+        };
+    },
+}
+
+// ❌ 错误 — 直接使用裸路径
+tokenIconSrc() {
+    const customIcon = this.contentConfig.tokenIcon;
+    if (customIcon) {
+        return customIcon; // 缺少 prefix 拼接，线上环境图片会 404
+    }
+    return require('./img/icon_token.svg');
+}
+```
+
+**规则总结：**
+
+1. 只要组件中有 `uploadimage` 类型配置项，`index.vue` 就**必须**包含 `prefix` computed 和 `isTest` method
+2. 所有消费 `uploadimage` 值的地方都必须拼接 `this.prefix`
+3. `require('./img/xxx')` 只能作为本地 fallback 默认值，不能用于消费 `uploadimage` 配置值
+4. 如果组件没有任何 `uploadimage` 配置项，则不需要 `prefix` 和 `isTest`
+
 ### 6. 代码验证
 
 对生成的 `.vue`、`.scss`、`.js` 文件依据 `references/knowledge/standards/` 下的编码规范进行自检，有问题则修正后重新写入。
@@ -374,6 +532,9 @@ config.js 中配置项的 `type` 可选值：
 - [ ] 列表 / Tab / 菜单类数据都暴露成 `array` + `template`，并且 `template` 与现有 `value` 结构一致
 - [ ] 所有图片（封面、占位、空态）都暴露成 `uploadimage`
 - [ ] `interaction.event` 内每个声明的事件，在 `index.vue` 都有对应 `eventGenerate` 调用
+- [ ] 复杂组件（>6 个独立元素）已按视觉元素分组，而非 contentConfig/styleConfig 平铺
+- [ ] 所有 `uploadimage` 配置项的消费处都拼接了 `this.prefix`（见 §5.1）
+- [ ] 若存在 `uploadimage` 类型配置项，`index.vue` 中已包含 `prefix` computed 和 `isTest` method
 
 **运行与产物**
 - [ ] 已执行 `npm run ioc start <ComponentName>` 且测试通过
